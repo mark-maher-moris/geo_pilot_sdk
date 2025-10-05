@@ -1,0 +1,1 @@
+{"version":3,"file":"BlogHeader.d.ts","sourceRoot":"","sources":["../../../src/components/BlogFullScreen/BlogHeader.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAG/B,UAAU,eAAe;IACvB,MAAM,EAAE,GAAG,CAAC;IACZ,MAAM,EAAE,GAAG,CAAC;IACZ,QAAQ,EAAE,GAAG,CAAC;CACf;AAED,eAAO,MAAM,UAAU,6CA+BrB,CAAC"}
