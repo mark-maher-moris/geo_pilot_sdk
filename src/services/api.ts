@@ -21,13 +21,18 @@ export class GEOPilotAPI {
   constructor(config: GEOPilotConfig) {
     this.config = config;
     this.cache = new Map();
-    
+
+    // Intelligent API URL resolution with fallbacks
+    const apiUrl = this.resolveApiUrl((config as any).apiUrl);
+
     this.client = axios.create({
-      baseURL: config.apiUrl,
+      baseURL: apiUrl,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
-        ...(config.apiKey && { 'X-API-Key': config.apiKey })
+        'X-Project-ID': config.projectId,
+        'X-Secret-Key': config.secretKey,
+        ...(config.apiKey && { 'X-API-Key': config.apiKey }) // Legacy support
       }
     });
 
@@ -60,6 +65,55 @@ export class GEOPilotAPI {
         throw new GEOPilotError(message, code, statusCode);
       }
     );
+  }
+
+  /**
+   * Intelligently resolve API URL with fallbacks for common hosting scenarios
+   */
+  private resolveApiUrl(providedUrl?: string): string {
+    // If URL is explicitly provided, use it
+    if (providedUrl) {
+      return providedUrl.endsWith('/') ? providedUrl.slice(0, -1) : providedUrl;
+    }
+
+    // Environment-based defaults
+    if (typeof window !== 'undefined') {
+      // Browser environment
+      const origin = window.location.origin;
+
+      // Vercel deployment detection
+      if (origin.includes('.vercel.app')) {
+        return `${origin}/api`;
+      }
+
+      // Railway deployment detection
+      if (origin.includes('.railway.app')) {
+        return `${origin}/api`;
+      }
+
+      // Heroku deployment detection
+      if (origin.includes('.herokuapp.com')) {
+        return `${origin}/api`;
+      }
+
+      // Netlify deployment detection
+      if (origin.includes('.netlify.app')) {
+        return `${origin}/.netlify/functions`;
+      }
+
+      // Custom domain with common patterns
+      if (origin.includes('.') && !origin.includes('localhost')) {
+        return `${origin}/api`;
+      }
+    }
+
+    // Development fallback - check if we're on localhost
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      return 'http://localhost:3001/api';
+    }
+
+    // Production fallback - use the live backend
+    return 'https://geopilotbackend.vercel.app/api';
   }
 
   /**
@@ -340,9 +394,13 @@ export class GEOPilotAPI {
     city?: string;
   }): Promise<void> {
     try {
+      // Safely access browser APIs that might not be available
+      const userAgent = analyticsData?.userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : '');
+      const referrer = analyticsData?.referrer || (typeof document !== 'undefined' ? document.referrer : '');
+
       await this.client.post(`/public/posts/${postId}/view`, {
-        userAgent: analyticsData?.userAgent || navigator.userAgent,
-        referrer: analyticsData?.referrer || document.referrer,
+        userAgent,
+        referrer,
         sessionId: analyticsData?.sessionId || this.generateSessionId(),
         country: analyticsData?.country,
         region: analyticsData?.region,
@@ -375,14 +433,16 @@ export class GEOPilotAPI {
    * Get RSS feed URL
    */
   getRSSFeedUrl(): string {
-    return `${this.config.apiUrl}/public/projects/${this.config.projectId}/rss`;
+    const baseUrl = this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
+    return `${baseUrl}/public/projects/${this.config.projectId}/rss`;
   }
 
   /**
    * Get sitemap URL
    */
   getSitemapUrl(): string {
-    return `${this.config.apiUrl}/public/projects/${this.config.projectId}/sitemap`;
+    const baseUrl = this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
+    return `${baseUrl}/public/projects/${this.config.projectId}/sitemap`;
   }
 
   /**
@@ -417,17 +477,24 @@ export class GEOPilotAPI {
    */
   updateConfig(newConfig: Partial<GEOPilotConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update client base URL if changed
-    if (newConfig.apiUrl) {
-      this.client.defaults.baseURL = newConfig.apiUrl;
+    if ((newConfig as any).apiUrl) {
+      this.client.defaults.baseURL = (newConfig as any).apiUrl;
     }
-    
-    // Update headers if API key changed
+
+    // Update headers if project ID or secret key changed
+    if (newConfig.projectId) {
+      this.client.defaults.headers['X-Project-ID'] = newConfig.projectId;
+    }
+    if (newConfig.secretKey) {
+      this.client.defaults.headers['X-Secret-Key'] = newConfig.secretKey;
+    }
+    // Update legacy API key if provided
     if (newConfig.apiKey) {
       this.client.defaults.headers['X-API-Key'] = newConfig.apiKey;
     }
-    
+
     // Clear cache when config changes
     this.clearCache();
   }
@@ -442,6 +509,13 @@ export class GEOPilotAPI {
     } catch (error) {
       return false;
     }
+  }
+
+  /**
+   * Get the resolved API base URL
+   */
+  getBaseUrl(): string {
+    return this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
   }
 }
 

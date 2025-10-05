@@ -48,9 +48,12 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
         }
 
         // Fetch design configuration from the backend using the public preview endpoint
-        const response = await fetch(`${currentConfig.apiUrl}/blog-design/${currentConfig.projectId}/public-preview`, {
+        const baseUrl = api.getBaseUrl();
+        const response = await fetch(`${baseUrl}/blog-design/${currentConfig.projectId}/public-preview`, {
           headers: {
             'Content-Type': 'application/json',
+            'X-Project-ID': currentConfig.projectId,
+            'X-Secret-Key': currentConfig.secretKey,
           },
         });
 
@@ -269,7 +272,7 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
     };
 
     fetchDesign();
-  }, [api, currentConfig.projectId, currentConfig.apiUrl]);
+  }, [api, currentConfig.projectId]);
 
   // Merge static config with dynamic design
   const mergedConfig = React.useMemo(() => {

@@ -32,7 +32,7 @@ export function useBlogSearch(): UseBlogSearchResult {
     } = {}
   ) => {
     if (!api) {
-      setError('Auto Blogify API not initialized');
+      setError('GEO Pilot API not initialized');
       return;
     }
 

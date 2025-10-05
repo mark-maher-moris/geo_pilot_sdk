@@ -53,8 +53,8 @@ export interface BlogTagsResponse {
     tags: string[];
 }
 export interface GEOPilotConfig {
-    apiUrl: string;
     projectId: string;
+    secretKey: string;
     apiKey?: string;
     language?: string;
     timezone?: string;

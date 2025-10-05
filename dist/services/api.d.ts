@@ -5,6 +5,10 @@ export declare class GEOPilotAPI {
     private cache;
     constructor(config: GEOPilotConfig);
     /**
+     * Intelligently resolve API URL with fallbacks for common hosting scenarios
+     */
+    private resolveApiUrl;
+    /**
      * Get cache key for request
      */
     private getCacheKey;
@@ -133,6 +137,10 @@ export declare class GEOPilotAPI {
      * Health check
      */
     healthCheck(): Promise<boolean>;
+    /**
+     * Get the resolved API base URL
+     */
+    getBaseUrl(): string;
 }
 export default GEOPilotAPI;
 //# sourceMappingURL=api.d.ts.map

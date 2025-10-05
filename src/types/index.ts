@@ -63,9 +63,9 @@ export interface BlogTagsResponse {
 }
 
 export interface GEOPilotConfig {
-  apiUrl: string;
   projectId: string;
-  apiKey?: string;
+  secretKey: string; // Required for project authentication
+  apiKey?: string; // Optional legacy API key support
   language?: string;
   timezone?: string;
   enableSEO?: boolean;

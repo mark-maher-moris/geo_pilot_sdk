@@ -74,12 +74,11 @@ export function SEOHead({
       }
       
       // Preconnect to API domain
-      if (config.apiUrl) {
-        const link = document.createElement('link');
-        link.rel = 'preconnect';
-        link.href = new URL(config.apiUrl).origin;
-        document.head.appendChild(link);
-      }
+      const baseUrl = (config as any).apiUrl || 'https://geopilotbackend.vercel.app';
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = new URL(baseUrl).origin;
+      document.head.appendChild(link);
       
       // DNS prefetch for external domains
       if (config.customDomain) {
@@ -89,7 +88,7 @@ export function SEOHead({
         document.head.appendChild(link);
       }
     }
-  }, [enablePerformanceOptimizations, finalImage, config.apiUrl, config.customDomain]);
+  }, [enablePerformanceOptimizations, finalImage, config.customDomain]);
 
   // Set meta tags in browser environment only
   React.useEffect(() => {

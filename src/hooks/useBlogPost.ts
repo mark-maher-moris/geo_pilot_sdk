@@ -30,7 +30,7 @@ export function useBlogPost(options: UseBlogPostOptions = {}): UseBlogPostResult
 
   const fetchPost = useCallback(async (forceRefresh: boolean = false) => {
     if (!api || (!postId && !slug)) {
-      setError(!api ? 'Auto Blogify API not initialized' : 'Post ID or slug is required');
+      setError(!api ? 'GEO Pilot API not initialized' : 'Post ID or slug is required');
       return;
     }
 

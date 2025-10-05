@@ -37,7 +37,7 @@ export function useBlogDesign(): UseBlogDesignResult {
       }
 
       // Fetch design configuration from the backend using the public preview endpoint
-      const response = await fetch(`${config.apiUrl}/blog-design/${config.projectId}/public-preview`, {
+      const response = await fetch(`${(config as any).apiUrl || 'https://geopilotbackend.vercel.app/api'}/blog-design/${config.projectId}/public-preview`, {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -3807,12 +3807,16 @@ class GEOPilotAPI {
     constructor(config) {
         this.config = config;
         this.cache = new Map();
+        // Intelligent API URL resolution with fallbacks
+        const apiUrl = this.resolveApiUrl(config.apiUrl);
         this.client = axios.create({
-            baseURL: config.apiUrl,
+            baseURL: apiUrl,
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
-                ...(config.apiKey && { 'X-API-Key': config.apiKey })
+                'X-Project-ID': config.projectId,
+                'X-Secret-Key': config.secretKey,
+                ...(config.apiKey && { 'X-API-Key': config.apiKey }) // Legacy support
             }
         });
         // Request interceptor
@@ -3835,6 +3839,46 @@ class GEOPilotAPI {
             const statusCode = (_g = error.response) === null || _g === void 0 ? void 0 : _g.status;
             throw new GEOPilotError(message, code, statusCode);
         });
+    }
+    /**
+     * Intelligently resolve API URL with fallbacks for common hosting scenarios
+     */
+    resolveApiUrl(providedUrl) {
+        // If URL is explicitly provided, use it
+        if (providedUrl) {
+            return providedUrl.endsWith('/') ? providedUrl.slice(0, -1) : providedUrl;
+        }
+        // Environment-based defaults
+        if (typeof window !== 'undefined') {
+            // Browser environment
+            const origin = window.location.origin;
+            // Vercel deployment detection
+            if (origin.includes('.vercel.app')) {
+                return `${origin}/api`;
+            }
+            // Railway deployment detection
+            if (origin.includes('.railway.app')) {
+                return `${origin}/api`;
+            }
+            // Heroku deployment detection
+            if (origin.includes('.herokuapp.com')) {
+                return `${origin}/api`;
+            }
+            // Netlify deployment detection
+            if (origin.includes('.netlify.app')) {
+                return `${origin}/.netlify/functions`;
+            }
+            // Custom domain with common patterns
+            if (origin.includes('.') && !origin.includes('localhost')) {
+                return `${origin}/api`;
+            }
+        }
+        // Development fallback - check if we're on localhost
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+            return 'http://localhost:3001/api';
+        }
+        // Production fallback - use the live backend
+        return 'https://geopilotbackend.vercel.app/api';
     }
     /**
      * Get cache key for request
@@ -3991,9 +4035,12 @@ class GEOPilotAPI {
      */
     async trackPageView(postId, analyticsData) {
         try {
+            // Safely access browser APIs that might not be available
+            const userAgent = (analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.userAgent) || (typeof navigator !== 'undefined' ? navigator.userAgent : '');
+            const referrer = (analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.referrer) || (typeof document !== 'undefined' ? document.referrer : '');
             await this.client.post(`/public/posts/${postId}/view`, {
-                userAgent: (analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.userAgent) || navigator.userAgent,
-                referrer: (analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.referrer) || document.referrer,
+                userAgent,
+                referrer,
                 sessionId: (analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.sessionId) || this.generateSessionId(),
                 country: analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.country,
                 region: analyticsData === null || analyticsData === void 0 ? void 0 : analyticsData.region,
@@ -4026,13 +4073,15 @@ class GEOPilotAPI {
      * Get RSS feed URL
      */
     getRSSFeedUrl() {
-        return `${this.config.apiUrl}/public/projects/${this.config.projectId}/rss`;
+        const baseUrl = this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
+        return `${baseUrl}/public/projects/${this.config.projectId}/rss`;
     }
     /**
      * Get sitemap URL
      */
     getSitemapUrl() {
-        return `${this.config.apiUrl}/public/projects/${this.config.projectId}/sitemap`;
+        const baseUrl = this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
+        return `${baseUrl}/public/projects/${this.config.projectId}/sitemap`;
     }
     /**
      * Get blog design configuration for public preview
@@ -4063,7 +4112,14 @@ class GEOPilotAPI {
         if (newConfig.apiUrl) {
             this.client.defaults.baseURL = newConfig.apiUrl;
         }
-        // Update headers if API key changed
+        // Update headers if project ID or secret key changed
+        if (newConfig.projectId) {
+            this.client.defaults.headers['X-Project-ID'] = newConfig.projectId;
+        }
+        if (newConfig.secretKey) {
+            this.client.defaults.headers['X-Secret-Key'] = newConfig.secretKey;
+        }
+        // Update legacy API key if provided
         if (newConfig.apiKey) {
             this.client.defaults.headers['X-API-Key'] = newConfig.apiKey;
         }
@@ -4081,6 +4137,12 @@ class GEOPilotAPI {
         catch (error) {
             return false;
         }
+    }
+    /**
+     * Get the resolved API base URL
+     */
+    getBaseUrl() {
+        return this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
     }
 }
 
@@ -4474,7 +4536,8 @@ function GEOPilotProvider({ config, children }) {
                     }
                 }
                 // Fetch design configuration from the backend using the public preview endpoint
-                const response = await fetch(`${currentConfig.apiUrl}/blog-design/${currentConfig.projectId}/public-preview`, {
+                const baseUrl = api.getBaseUrl();
+                const response = await fetch(`${baseUrl}/blog-design/${currentConfig.projectId}/public-preview`, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -4694,7 +4757,7 @@ function GEOPilotProvider({ config, children }) {
             }
         };
         fetchDesign();
-    }, [api, currentConfig.projectId, currentConfig.apiUrl]);
+    }, [api, currentConfig.projectId]);
     // Merge static config with dynamic design
     const mergedConfig = React__namespace.useMemo(() => {
         return mergeThemeConfig(currentConfig, design);
@@ -4931,11 +4994,12 @@ function useSEO(config, post, type = 'post') {
         try {
             setSeoData(prev => ({ ...prev, loading: true, error: null }));
             let endpoint = '';
+            const baseUrl = config.apiUrl || 'https://geopilotbackend.vercel.app/api';
             if (type === 'post' && (post === null || post === void 0 ? void 0 : post.slug)) {
-                endpoint = `${config.apiUrl}/seo/${config.projectId}/blog/${post.slug}/complete`;
+                endpoint = `${baseUrl}/seo/${config.projectId}/blog/${post.slug}/complete`;
             }
             else {
-                endpoint = `${config.apiUrl}/seo/${config.projectId}/blog/complete`;
+                endpoint = `${baseUrl}/seo/${config.projectId}/blog/complete`;
             }
             console.log('Fetching SEO data from:', endpoint);
             const response = await fetch(endpoint, {
@@ -9441,12 +9505,11 @@ function SEOHead({ post, config, title, description, image, url, type = post ? '
                 document.head.appendChild(link);
             }
             // Preconnect to API domain
-            if (config.apiUrl) {
-                const link = document.createElement('link');
-                link.rel = 'preconnect';
-                link.href = new URL(config.apiUrl).origin;
-                document.head.appendChild(link);
-            }
+            const baseUrl = config.apiUrl || 'https://geopilotbackend.vercel.app';
+            const link = document.createElement('link');
+            link.rel = 'preconnect';
+            link.href = new URL(baseUrl).origin;
+            document.head.appendChild(link);
             // DNS prefetch for external domains
             if (config.customDomain) {
                 const link = document.createElement('link');
@@ -9455,7 +9518,7 @@ function SEOHead({ post, config, title, description, image, url, type = post ? '
                 document.head.appendChild(link);
             }
         }
-    }, [enablePerformanceOptimizations, finalImage, config.apiUrl, config.customDomain]);
+    }, [enablePerformanceOptimizations, finalImage, config.customDomain]);
     // Set meta tags in browser environment only
     React__namespace.useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -10063,7 +10126,12 @@ const BlogFooter = React__namespace.memo(function BlogFooter({ metadata, showPow
 function useBlogState(initialProps) {
     const [selectedPost, setSelectedPost] = React.useState(null);
     const [currentPage, setCurrentPage] = React.useState(initialProps.page);
-    const [currentSearch, setCurrentSearch] = React.useState(initialProps.searchQuery);
+    const [currentSearch, setCurrentSearch] = React.useState(initialProps.searchQuery || '');
+    const [currentCategory, setCurrentCategory] = React.useState(undefined);
+    const [currentTag, setCurrentTag] = React.useState(undefined);
+    const [currentFilters, setCurrentFilters] = React.useState({
+        search: initialProps.searchQuery || ''
+    });
     const handleSearch = React.useCallback((query) => {
         setCurrentSearch(query);
         setCurrentPage(1);
@@ -10078,15 +10146,34 @@ function useBlogState(initialProps) {
     const handleBackToList = React.useCallback(() => {
         setSelectedPost(null);
     }, []);
+    const handleFilterChange = React.useCallback((filters) => {
+        setCurrentFilters(filters);
+        if (filters.search !== undefined) {
+            setCurrentSearch(filters.search);
+        }
+        if (filters.category !== undefined) {
+            setCurrentCategory(filters.category);
+        }
+        if (filters.tag !== undefined) {
+            setCurrentTag(filters.tag);
+        }
+        setCurrentPage(1);
+    }, []);
     return {
         selectedPost,
         currentPage,
         currentSearch,
+        currentCategory,
+        currentTag,
+        currentFilters,
         handleSearch,
         handlePageChange,
         handlePostClick,
         handleBackToList,
-        setCurrentSearch
+        setCurrentSearch,
+        handleFilterChange,
+        setCurrentCategory,
+        setCurrentTag
     };
 }
 // Helper functions
@@ -10097,16 +10184,16 @@ function createContainerClasses(design, className) {
     return `${baseClasses} ${className}`.trim();
 }
 function createContainerStyles(design, style) {
-    return applyDesignStyles(design, style);
+    return applyDesignStyles(design, style) || {};
 }
 // Main Component
 function BlogFullScreen(props) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
-    const { config, page, limit, searchQuery, onPostClick, className = '', style } = props;
+    const { config, page = 1, limit = 12, searchQuery = '', onPostClick, className = '', style } = props;
     // Hooks
     const { design } = useGEOPilot();
     const blogState = useBlogState({ page, searchQuery });
-    const finalLimit = limit !== null && limit !== void 0 ? limit : 12;
+    const finalLimit = limit;
     const { posts, pagination, loading, error, refetch } = useBlogPosts({
         page: blogState.currentPage,
         limit: finalLimit,
@@ -10143,7 +10230,7 @@ function BlogFullScreen(props) {
     const finalFaqItems = [];
     const finalFooterText = undefined;
     // Get CTA buttons from backend design configuration only
-    const finalCTAButtons = React.useMemo(() => { var _a; return ((_a = design === null || design === void 0 ? void 0 : design.ctaButtons) === null || _a === void 0 ? void 0 : _a.filter(btn => btn.enabled)) || []; }, [design]);
+    const finalCTAButtons = React.useMemo(() => { var _a; return ((_a = design === null || design === void 0 ? void 0 : design.ctaButtons) === null || _a === void 0 ? void 0 : _a.filter((btn) => btn.enabled)) || []; }, [design]);
     // Event handlers
     const handlePostClick = React.useCallback((post) => {
         if (onPostClick) {
@@ -10198,10 +10285,10 @@ function BlogFullScreen(props) {
 }
 // Sub-components
 function LoadingState() {
-    return (jsxRuntime.jsx("div", { className: "auto-blogify-blog-full-screen-loading flex justify-center items-center min-h-screen", children: jsxRuntime.jsx(LoadingSpinner, {}) }));
+    return (jsxRuntime.jsx("div", { className: "auto-blogify-blog-full-screen-loading flex justify-center items-center min-h-screen", children: jsxRuntime.jsxs("div", { className: "text-center", children: [jsxRuntime.jsx(LoadingSpinner, {}), jsxRuntime.jsx("p", { className: "mt-4 text-gray-600", children: "Loading blog posts..." })] }) }));
 }
 function ErrorState({ error, onRetry, className, style }) {
-    return (jsxRuntime.jsx(ErrorMessage, { message: error, onRetry: onRetry, className: className, style: style }));
+    return (jsxRuntime.jsx("div", { className: `auto-blogify-blog-error ${className}`, style: style, children: jsxRuntime.jsx(ErrorMessage, { message: error, onRetry: onRetry }) }));
 }
 function SinglePostView({ config, post, onBack, blogProps, className, style }) {
     return (jsxRuntime.jsx(BlogPost, { config: config, postId: post.id, slug: post.slug, onBack: onBack, showRelatedPosts: true, enableComments: false, enableSharing: blogProps.showSocialShare, ...blogProps, className: className, style: style }));
@@ -10210,10 +10297,10 @@ function BlogListView({ config, design, metadata, posts, loading, pagination, bl
     var _a, _b, _c;
     const { showHeader, showFooter, showSidebar, showSearch, showFilters, showPagination, showCategories, showTags } = showProps;
     const { layout, containerClasses, containerStyles, componentSettings } = layoutProps;
-    return (jsxRuntime.jsxs("div", { className: containerClasses, style: containerStyles, role: "main", "aria-label": "Blog content", children: [jsxRuntime.jsx(SEOHead, { config: config, title: (metadata === null || metadata === void 0 ? void 0 : metadata.seoTitle) || (metadata === null || metadata === void 0 ? void 0 : metadata.projectName) || 'Blog', description: (metadata === null || metadata === void 0 ? void 0 : metadata.seoDescription) || (metadata === null || metadata === void 0 ? void 0 : metadata.description) }), showHeader && (jsxRuntime.jsx(BlogHeader, { config: config, design: design, metadata: metadata })), jsxRuntime.jsx("main", { className: "flex-1 w-full", role: "main", "aria-label": "Blog posts", children: jsxRuntime.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full", children: jsxRuntime.jsxs("div", { className: `flex gap-8 ${showSidebar ? 'lg:flex-row' : 'flex-col justify-center'}`, children: [jsxRuntime.jsx(MainContentSection, { config: config, design: design, posts: posts, loading: loading, pagination: pagination, layout: layout, showSearch: showSearch, showFilters: showFilters, showPagination: showPagination, showSidebar: showSidebar, componentSettings: componentSettings, blogState: blogState, onPostClick: onPostClick }), showSidebar && (jsxRuntime.jsx(SidebarSection, { config: config, metadata: metadata, posts: posts, showCategories: showCategories, showTags: showTags, blogState: blogState, onPostClick: onPostClick }))] }) }) }), showFooter && jsxRuntime.jsx(BlogFooter, { metadata: metadata, showPoweredBy: (_c = (_b = (_a = design === null || design === void 0 ? void 0 : design.blogSettings) === null || _a === void 0 ? void 0 : _a.branding) === null || _b === void 0 ? void 0 : _b.showPoweredBy) !== null && _c !== void 0 ? _c : true })] }));
+    return (jsxRuntime.jsxs("div", { className: containerClasses, style: containerStyles, role: "main", "aria-label": "Blog content", children: [jsxRuntime.jsx(SEOHead, { config: config, title: (metadata === null || metadata === void 0 ? void 0 : metadata.seoTitle) || (metadata === null || metadata === void 0 ? void 0 : metadata.projectName) || 'Blog', description: (metadata === null || metadata === void 0 ? void 0 : metadata.seoDescription) || (metadata === null || metadata === void 0 ? void 0 : metadata.description) }), showHeader && (jsxRuntime.jsx(BlogHeader, { config: config, design: design, metadata: metadata })), jsxRuntime.jsx("main", { className: "flex-1 w-full", role: "main", "aria-label": "Blog posts", children: jsxRuntime.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full", children: jsxRuntime.jsxs("div", { className: `flex gap-8 ${showSidebar ? 'lg:flex-row flex-col' : 'flex-col justify-center'}`, children: [jsxRuntime.jsx(MainContentSection, { config: config, design: design, posts: posts, loading: loading, pagination: pagination, layout: layout, showSearch: showSearch, showFilters: showFilters, showPagination: showPagination, showSidebar: showSidebar, componentSettings: componentSettings, blogState: blogState, onPostClick: onPostClick }), showSidebar && (jsxRuntime.jsx(SidebarSection, { config: config, metadata: metadata, posts: posts, showCategories: showCategories, showTags: showTags, blogState: blogState, onPostClick: onPostClick }))] }) }) }), showFooter && jsxRuntime.jsx(BlogFooter, { metadata: metadata, showPoweredBy: (_c = (_b = (_a = design === null || design === void 0 ? void 0 : design.blogSettings) === null || _a === void 0 ? void 0 : _a.branding) === null || _b === void 0 ? void 0 : _b.showPoweredBy) !== null && _c !== void 0 ? _c : true })] }));
 }
 function MainContentSection({ config, design, posts, loading, pagination, layout, showSearch, showFilters, showPagination, showSidebar, componentSettings, blogState, onPostClick }) {
-    return (jsxRuntime.jsx("div", { className: `${showSidebar ? 'lg:w-2/3' : 'w-full max-w-5xl mx-auto'}`, role: "region", "aria-label": "Blog posts and filters", children: jsxRuntime.jsx(BlogMainContent, { config: config, design: design, posts: posts, loading: loading, pagination: pagination, layout: layout, showSearch: showSearch, showFilters: showFilters, showPagination: showPagination, componentSettings: componentSettings, blogState: blogState, onPostClick: onPostClick }) }));
+    return (jsxRuntime.jsx("div", { className: `${showSidebar ? 'lg:w-2/3 w-full' : 'w-full max-w-5xl mx-auto'}`, role: "region", "aria-label": "Blog posts and filters", children: jsxRuntime.jsx(BlogMainContent, { config: config, design: design, posts: posts, loading: loading, pagination: pagination, layout: layout, showSearch: showSearch, showFilters: showFilters, showPagination: showPagination, componentSettings: componentSettings, blogState: blogState, onPostClick: onPostClick }) }));
 }
 function SidebarSection({ config, metadata, posts, showCategories, showTags, blogState, onPostClick }) {
     return (jsxRuntime.jsx("aside", { className: "lg:w-1/3", role: "complementary", "aria-label": "Blog sidebar", children: jsxRuntime.jsx(BlogSidebar, { config: config, metadata: metadata, posts: posts, showCategories: showCategories, showTags: showTags, blogState: blogState, onPostClick: onPostClick }) }));

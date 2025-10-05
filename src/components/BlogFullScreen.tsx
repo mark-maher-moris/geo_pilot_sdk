@@ -9,7 +9,7 @@ import { useSEO } from '../hooks/useSEO';
 import { useGEOPilot } from '../hooks/useGEOPilot';
 
 // Components
-import { BlogPost } from './BlogPost';
+import { BlogPost as BlogPostComponent } from './BlogPost';
 import { SEOHead } from './SEOHead';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorMessage } from './ErrorMessage';
@@ -17,34 +17,43 @@ import { BlogHeader } from './BlogFullScreen/BlogHeader';
 import { BlogMainContent } from './BlogFullScreen/BlogMainContent';
 import { BlogSidebar } from './BlogFullScreen/BlogSidebar';
 import { BlogFooter } from './BlogFullScreen/BlogFooter';
-import { BlogTags } from './BlogTags';
 
 // Utils
 import { getLayoutClasses, applyDesignStyles, getComponentSettings } from '../utils/themeUtils';
 
 // Types
-interface BlogState {
-  selectedPost: any;
+import type { BlogPost } from '../types';
+import type { BlogState, BlogFilters } from './BlogFullScreen/types';
+
+interface BlogFullScreenState extends BlogState {
+  selectedPost: BlogPost | null;
   currentPage: number;
-  currentSearch?: string;
 }
 
-interface BlogStateActions {
+interface BlogFullScreenStateActions {
   handleSearch: (query: string) => void;
   handlePageChange: (page: number) => void;
-  handlePostClick: (post: any) => void;
+  handlePostClick: (post: BlogPost) => void;
   handleBackToList: () => void;
-  setCurrentSearch: (search?: string) => void;
+  setCurrentSearch: (search: string) => void;
+  handleFilterChange: (filters: BlogFilters) => void;
+  setCurrentCategory: (category?: string) => void;
+  setCurrentTag: (tag?: string) => void;
 }
 
 // Custom Hooks
 function useBlogState(initialProps: {
   page: number;
   searchQuery?: string;
-}): BlogState & BlogStateActions {
-  const [selectedPost, setSelectedPost] = useState<any>(null);
+}): BlogFullScreenState & BlogFullScreenStateActions {
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [currentPage, setCurrentPage] = useState(initialProps.page);
-  const [currentSearch, setCurrentSearch] = useState(initialProps.searchQuery);
+  const [currentSearch, setCurrentSearch] = useState<string>(initialProps.searchQuery || '');
+  const [currentCategory, setCurrentCategory] = useState<string | undefined>(undefined);
+  const [currentTag, setCurrentTag] = useState<string | undefined>(undefined);
+  const [currentFilters, setCurrentFilters] = useState<BlogFilters>({
+    search: initialProps.searchQuery || ''
+  });
 
   const handleSearch = useCallback((query: string) => {
     setCurrentSearch(query);
@@ -56,7 +65,7 @@ function useBlogState(initialProps: {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const handlePostClick = useCallback((post: any) => {
+  const handlePostClick = useCallback((post: BlogPost) => {
     setSelectedPost(post);
   }, []);
 
@@ -64,16 +73,36 @@ function useBlogState(initialProps: {
     setSelectedPost(null);
   }, []);
 
+  const handleFilterChange = useCallback((filters: BlogFilters) => {
+    setCurrentFilters(filters);
+    if (filters.search !== undefined) {
+      setCurrentSearch(filters.search);
+    }
+    if (filters.category !== undefined) {
+      setCurrentCategory(filters.category);
+    }
+    if (filters.tag !== undefined) {
+      setCurrentTag(filters.tag);
+    }
+    setCurrentPage(1);
+  }, []);
+
   return {
     selectedPost,
     currentPage,
     currentSearch,
+    currentCategory,
+    currentTag,
+    currentFilters,
     handleSearch,
     handlePageChange,
     handlePostClick,
     handleBackToList,
-    setCurrentSearch
-  };
+    setCurrentSearch,
+    handleFilterChange,
+    setCurrentCategory,
+    setCurrentTag
+  } as BlogFullScreenState & BlogFullScreenStateActions;
 }
 
 // Helper functions
@@ -84,17 +113,17 @@ function createContainerClasses(design: any, className: string): string {
   return `${baseClasses} ${className}`.trim();
 }
 
-function createContainerStyles(design: any, style?: React.CSSProperties) {
-  return applyDesignStyles(design, style);
+function createContainerStyles(design: any, style?: React.CSSProperties): React.CSSProperties {
+  return applyDesignStyles(design, style) || {};
 }
 
 // Main Component
 export function BlogFullScreen(props: BlogFullScreenProps) {
   const {
     config,
-    page,
-    limit,
-    searchQuery,
+    page = 1,
+    limit = 12,
+    searchQuery = '',
     onPostClick,
     className = '',
     style
@@ -105,8 +134,8 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
   const blogState = useBlogState({ page, searchQuery });
 
   // Get configuration from design - everything comes from backend
-  const finalPage = page ?? 1;
-  const finalLimit = limit ?? 12;
+  const finalPage = page;
+  const finalLimit = limit;
 
   const {
     posts,
@@ -138,7 +167,7 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
   const finalShowSidebar = design?.layout?.showSidebar ?? true;
   const finalShowHeader = true; // Always show header
   const finalShowFooter = true; // Always show footer
-  const finalLayout = design?.layout?.type ?? 'grid';
+  const finalLayout = (design?.layout?.type as 'grid' | 'list' | 'masonry') ?? 'grid';
   
   // Blog post configuration from backend design
   const finalWebsiteName = design?.blogSettings?.branding?.showPoweredBy ? "Website's Blog" : undefined;
@@ -155,10 +184,10 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
   const finalFooterText = undefined;
   
   // Get CTA buttons from backend design configuration only
-  const finalCTAButtons = useMemo(() => design?.ctaButtons?.filter(btn => btn.enabled) || [], [design]);
+  const finalCTAButtons = useMemo(() => design?.ctaButtons?.filter((btn: any) => btn.enabled) || [], [design]);
 
   // Event handlers
-  const handlePostClick = useCallback((post: any) => {
+  const handlePostClick = useCallback((post: BlogPost) => {
     if (onPostClick) {
       onPostClick(post);
     } else {
@@ -239,7 +268,10 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
 function LoadingState() {
   return (
     <div className="auto-blogify-blog-full-screen-loading flex justify-center items-center min-h-screen">
-      <LoadingSpinner />
+      <div className="text-center">
+        <LoadingSpinner />
+        <p className="mt-4 text-gray-600">Loading blog posts...</p>
+      </div>
     </div>
   );
 }
@@ -251,32 +283,32 @@ function ErrorState({ error, onRetry, className, style }: {
   style?: React.CSSProperties;
 }) {
   return (
-    <ErrorMessage 
-      message={error} 
-      onRetry={onRetry}
-      className={className}
-      style={style}
-    />
+    <div className={`auto-blogify-blog-error ${className}`} style={style}>
+      <ErrorMessage
+        message={error}
+        onRetry={onRetry}
+      />
+    </div>
   );
 }
 
-function SinglePostView({ 
-  config, 
-  post, 
-  onBack, 
-  blogProps, 
-  className, 
-  style 
+function SinglePostView({
+  config,
+  post,
+  onBack,
+  blogProps,
+  className,
+  style
 }: {
   config: any;
-  post: any;
+  post: BlogPost;
   onBack: () => void;
   blogProps: any;
   className: string;
   style?: React.CSSProperties;
 }) {
   return (
-    <BlogPost
+    <BlogPostComponent
       config={config}
       postId={post.id}
       slug={post.slug}
@@ -306,13 +338,13 @@ function BlogListView({
   config: any;
   design: any;
   metadata: any;
-  posts: any[];
+  posts: BlogPost[];
   loading: boolean;
   pagination: any;
-  blogState: BlogState & BlogStateActions;
+  blogState: BlogFullScreenState & BlogFullScreenStateActions;
   showProps: any;
   layoutProps: any;
-  onPostClick: (post: any) => void;
+  onPostClick: (post: BlogPost) => void;
 }) {
   const {
     showHeader,
@@ -355,7 +387,7 @@ function BlogListView({
 
       <main className="flex-1 w-full" role="main" aria-label="Blog posts">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-          <div className={`flex gap-8 ${showSidebar ? 'lg:flex-row' : 'flex-col justify-center'}`}>
+          <div className={`flex gap-8 ${showSidebar ? 'lg:flex-row flex-col' : 'flex-col justify-center'}`}>
             
             <MainContentSection
               config={config}
@@ -407,10 +439,24 @@ function MainContentSection({
   componentSettings,
   blogState,
   onPostClick
-}: any) {
+}: {
+  config: any;
+  design: any;
+  posts: BlogPost[];
+  loading: boolean;
+  pagination: any;
+  layout: string;
+  showSearch: boolean;
+  showFilters: boolean;
+  showPagination: boolean;
+  showSidebar: boolean;
+  componentSettings: any;
+  blogState: BlogFullScreenState & BlogFullScreenStateActions;
+  onPostClick: (post: BlogPost) => void;
+}) {
   return (
-    <div 
-      className={`${showSidebar ? 'lg:w-2/3' : 'w-full max-w-5xl mx-auto'}`}
+    <div
+      className={`${showSidebar ? 'lg:w-2/3 w-full' : 'w-full max-w-5xl mx-auto'}`}
       role="region"
       aria-label="Blog posts and filters"
     >
@@ -441,7 +487,15 @@ function SidebarSection({
   showTags,
   blogState,
   onPostClick
-}: any) {
+}: {
+  config: any;
+  metadata: any;
+  posts: BlogPost[];
+  showCategories: boolean;
+  showTags: boolean;
+  blogState: BlogFullScreenState & BlogFullScreenStateActions;
+  onPostClick: (post: BlogPost) => void;
+}) {
   return (
     <aside 
       className="lg:w-1/3"

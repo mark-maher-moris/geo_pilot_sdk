@@ -71,10 +71,11 @@ export function useSEO(
       setSeoData(prev => ({ ...prev, loading: true, error: null }));
 
       let endpoint = '';
+      const baseUrl = (config as any).apiUrl || 'https://geopilotbackend.vercel.app/api';
       if (type === 'post' && post?.slug) {
-        endpoint = `${config.apiUrl}/seo/${config.projectId}/blog/${post.slug}/complete`;
+        endpoint = `${baseUrl}/seo/${config.projectId}/blog/${post.slug}/complete`;
       } else {
-        endpoint = `${config.apiUrl}/seo/${config.projectId}/blog/complete`;
+        endpoint = `${baseUrl}/seo/${config.projectId}/blog/complete`;
       }
 
       console.log('Fetching SEO data from:', endpoint);
@@ -244,8 +245,9 @@ export function useSEOAnalysis(config: GEOPilotConfig, post?: BlogPost) {
       setLoading(true);
       setError(null);
 
+      const baseUrl = (config as any).apiUrl || 'https://geopilotbackend.vercel.app/api';
       const response = await fetch(
-        `${config.apiUrl}/seo/${config.projectId}/blog/${post.slug}/analyze`
+        `${baseUrl}/seo/${config.projectId}/blog/${post.slug}/analyze`
       );
       const result = await response.json();
 

@@ -128,7 +128,8 @@ export function ComparisonPage({
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${config.apiUrl}/public/comparison-pages/${slug}`);
+      const baseUrl = (config as any).apiUrl || 'https://geopilotbackend.vercel.app/api';
+      const response = await fetch(`${baseUrl}/public/comparison-pages/${slug}`);
       const result = await response.json();
 
       if (result.success) {
@@ -147,7 +148,8 @@ export function ComparisonPage({
   const handleCTAClick = async (url: string) => {
     // Track conversion
     try {
-      await fetch(`${config.apiUrl}/public/comparison-pages/${slug}/track-conversion`, {
+      const baseUrl = (config as any).apiUrl || 'https://geopilotbackend.vercel.app/api';
+      await fetch(`${baseUrl}/public/comparison-pages/${slug}/track-conversion`, {
         method: 'POST'
       });
     } catch (err) {
