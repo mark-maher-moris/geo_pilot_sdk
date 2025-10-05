@@ -1,20 +1,22 @@
-# Auto Blogify SDK
+# GEO Pilot SDK
 
-Integrate a complete, backend-driven blog into any Next.js app in minutes.
+Integrate advanced geospatial blog and content management capabilities into any Next.js app in minutes.
 
 ## What you get
 
 - Easy drop-in components (Next.js friendly)
+- Advanced geospatial features and location-based content
 - SEO-ready (meta, JSON-LD, sitemaps)
-- Fully backend-driven styling/settings from your Auto Blogify dashboard
+- Fully backend-driven styling/settings from your GEO Pilot dashboard
 - Geo, analytics, TypeScript support
+- Location-based content targeting and filtering
 
 ## Install
 
 ```bash
-npm install @auto-blogify/sdk
+npm install @geo-pilot/sdk
 # or
-yarn add @auto-blogify/sdk
+yarn add @geo-pilot/sdk
 ```
 
 ## Quick start
@@ -22,23 +24,23 @@ yarn add @auto-blogify/sdk
 1) Add environment variables (e.g. `.env.local`)
 
 ```env
-NEXT_PUBLIC_AUTO_BLOGIFY_API_URL=https://your-api-domain.com/api
-NEXT_PUBLIC_AUTO_BLOGIFY_PROJECT_ID=your-project-id
+NEXT_PUBLIC_GEO_PILOT_API_URL=https://your-api-domain.com/api
+NEXT_PUBLIC_GEO_PILOT_PROJECT_ID=your-project-id
 ```
 
 2) Wrap your app
 
 ```tsx
 // app/layout.tsx or pages/_app.tsx
-import { AutoBlogifyProvider, defaultConfig } from '@auto-blogify/sdk';
+import { GEOPilotProvider, defaultConfig } from '@geo-pilot/sdk';
 
 export default function Layout({ children }) {
   return (
-    <AutoBlogifyProvider 
+    <GEOPilotProvider 
       config={defaultConfig}
     >
       {children}
-    </AutoBlogifyProvider>
+    </GEOPilotProvider>
   );
 }
 ```
@@ -47,7 +49,7 @@ export default function Layout({ children }) {
 
 ```tsx
 // app/blog/page.tsx
-import { BlogFullScreen } from '@auto-blogify/sdk';
+import { BlogFullScreen } from '@geo-pilot/sdk';
 
 export default function BlogPage() {
   return (
@@ -56,7 +58,7 @@ export default function BlogPage() {
 }
 ```
 
-That’s it. All styling, layout, typography, and component visibility are controlled in your Auto Blogify dashboard.
+That's it. All styling, layout, typography, and component visibility are controlled in your GEO Pilot dashboard.
 
 ## Minimal config (optional)
 
@@ -83,7 +85,7 @@ That’s it. All styling, layout, typography, and component visibility are contr
 Example:
 
 ```tsx
-import { useBlogPosts } from '@auto-blogify/sdk';
+import { useBlogPosts } from '@geo-pilot/sdk';
 
 function Posts() {
   const { posts, loading } = useBlogPosts({ page: 1, limit: 10 });
@@ -99,11 +101,11 @@ function Posts() {
 ## Server usage
 
 ```tsx
-import { AutoBlogifyAPI } from '@auto-blogify/sdk';
+import { GEOPilotAPI } from '@geo-pilot/sdk';
 
-const api = new AutoBlogifyAPI({
-  apiUrl: process.env.AUTO_BLOGIFY_API_URL!,
-  projectId: process.env.AUTO_BLOGIFY_PROJECT_ID!
+const api = new GEOPilotAPI({
+  apiUrl: process.env.GEO_PILOT_API_URL!,
+  projectId: process.env.GEO_PILOT_PROJECT_ID!
 });
 
 const { posts } = await api.getBlogPosts({ limit: 10 });
@@ -113,6 +115,7 @@ const { posts } = await api.getBlogPosts({ limit: 10 });
 
 - The SDK is backend-driven. Prefer configuring styles and behavior in the dashboard.
 - Keep Next.js images configured for your asset domains if needed.
+- Advanced geospatial features require proper API configuration.
 
 ## More docs
 
@@ -121,9 +124,8 @@ const { posts } = await api.getBlogPosts({ limit: 10 });
 
 ## Support
 
-- Email: support@auto-blogify.com
-- Docs: https://docs.auto-blogify.com
-- Discord: https://discord.gg/auto-blogify
-- Issues: https://github.com/auto-blogify/sdk/issues
+- Website: https://geopilot.buildagon.com
+- GitHub: https://github.com/mark-maher-moris/geo_pilot_sdk
+- Issues: https://github.com/mark-maher-moris/geo_pilot_sdk/issues
 
-MIT © Auto Blogify
+MIT © GEO Pilot

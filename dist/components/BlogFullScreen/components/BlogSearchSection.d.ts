@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { BlogState } from '../types';
-import { AutoBlogifyConfig } from '../../../types';
+import { GEOPilotConfig } from '../../../types';
 interface BlogSearchSectionProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     blogState: BlogState;
     showSearch: boolean;
     showFilters: boolean;

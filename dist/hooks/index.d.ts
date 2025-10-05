@@ -1,4 +1,4 @@
-export { useAutoBlogify } from './useAutoBlogify';
+export { useGEOPilot } from './useGEOPilot';
 export { useBlogPosts } from './useBlogPosts';
 export { useBlogPost } from './useBlogPost';
 export { useBlogSearch } from './useBlogSearch';

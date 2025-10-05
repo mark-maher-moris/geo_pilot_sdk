@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
-import { AutoBlogifyConfig } from '../types';
+import { useGEOPilot } from '../hooks/useGEOPilot';
+import { GEOPilotConfig } from '../types';
 
 export interface BlogCategoriesProps {
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   onCategoryClick?: (category: string) => void;
   showPostCount?: boolean;
   maxCategories?: number;
@@ -18,7 +18,7 @@ export function BlogCategories({
   maxCategories = 10,
   className = ''
 }: BlogCategoriesProps) {
-  const { api, apiReady } = useAutoBlogify();
+  const { api, apiReady } = useGEOPilot();
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

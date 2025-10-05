@@ -1,9 +1,9 @@
-import { AutoBlogifyConfig, BlogPost, BlogPostsResponse, BlogPostResponse, BlogMetadataResponse, BlogCategoriesResponse, BlogTagsResponse, SearchFilters, AnalyticsEvent } from '../types';
-export declare class AutoBlogifyAPI {
+import { GEOPilotConfig, BlogPost, BlogPostsResponse, BlogPostResponse, BlogMetadataResponse, BlogCategoriesResponse, BlogTagsResponse, SearchFilters, AnalyticsEvent } from '../types';
+export declare class GEOPilotAPI {
     private client;
     private config;
     private cache;
-    constructor(config: AutoBlogifyConfig);
+    constructor(config: GEOPilotConfig);
     /**
      * Get cache key for request
      */
@@ -128,11 +128,11 @@ export declare class AutoBlogifyAPI {
     /**
      * Update configuration
      */
-    updateConfig(newConfig: Partial<AutoBlogifyConfig>): void;
+    updateConfig(newConfig: Partial<GEOPilotConfig>): void;
     /**
      * Health check
      */
     healthCheck(): Promise<boolean>;
 }
-export default AutoBlogifyAPI;
+export default GEOPilotAPI;
 //# sourceMappingURL=api.d.ts.map

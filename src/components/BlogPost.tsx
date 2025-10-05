@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useBlogPost } from '../hooks/useBlogPost';
 import { useSEO } from '../hooks/useSEO';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { BlogPostProps } from '../types';
 import { BlogSiteHeader } from './BlogSiteHeader';
 import { BlogPostMetadata } from './BlogPostMetadata';
@@ -77,7 +77,7 @@ export function BlogPost({
   className = '',
   style
 }: BlogPostEnhancedProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
   
   const {
     post,

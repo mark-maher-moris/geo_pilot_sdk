@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles } from '../utils/themeUtils';
 
 export interface ContentFreshnessProps {
@@ -22,7 +22,7 @@ export function ContentFreshness({
   className = '',
   style
 }: ContentFreshnessProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
 
   const freshnessData = useMemo(() => {
     const now = new Date();

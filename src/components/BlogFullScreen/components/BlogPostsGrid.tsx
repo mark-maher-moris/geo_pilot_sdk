@@ -2,14 +2,14 @@ import * as React from 'react';
 import { BlogCard } from '../../BlogCard';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import { BlogPost, BlogLayout, ComponentSettings } from '../types';
-import { AutoBlogifyConfig } from '../../../types';
+import { GEOPilotConfig } from '../../../types';
 import { getLayoutClasses, getEmptyStateMessage } from '../utils/layoutUtils';
 
 interface BlogPostsGridProps {
   posts: BlogPost[];
   loading: boolean;
   layout: BlogLayout;
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   componentSettings: ComponentSettings;
   blogState: {
     currentSearch: string;

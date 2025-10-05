@@ -1,6 +1,6 @@
-import { SearchFilters, AutoBlogifyConfig } from '../types';
+import { SearchFilters, GEOPilotConfig } from '../types';
 export interface BlogFiltersProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     onFilterChange: (filters: SearchFilters) => void;
     currentFilters?: SearchFilters;
     className?: string;

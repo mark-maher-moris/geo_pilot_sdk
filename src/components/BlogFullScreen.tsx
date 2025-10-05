@@ -6,7 +6,7 @@ import { BlogFullScreenProps } from '../types';
 import { useBlogPosts } from '../hooks/useBlogPosts';
 import { useBlogMetadata } from '../hooks/useBlogMetadata';
 import { useSEO } from '../hooks/useSEO';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 
 // Components
 import { BlogPost } from './BlogPost';
@@ -101,7 +101,7 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
   } = props;
 
   // Hooks
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
   const blogState = useBlogState({ page, searchQuery });
 
   // Get configuration from design - everything comes from backend

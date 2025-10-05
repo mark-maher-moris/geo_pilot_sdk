@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles } from '../utils/themeUtils';
 
 export interface TableOfContentsItem {
@@ -25,7 +25,7 @@ export function BlogTableOfContents({
   className = '',
   style
 }: BlogTableOfContentsProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
   const [activeId, setActiveId] = useState<string>('');
   const [isVisible, setIsVisible] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);

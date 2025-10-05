@@ -3772,18 +3772,18 @@ const {
   mergeConfig
 } = axios;
 
-// Core types for the Auto Blogify SDK
+// Core types for the GEO Pilot SDK
 // Error types
-class AutoBlogifyError extends Error {
+class GEOPilotError extends Error {
     constructor(message, code, statusCode) {
         super(message);
         this.code = code;
         this.statusCode = statusCode;
-        this.name = 'AutoBlogifyError';
+        this.name = 'GEOPilotError';
     }
 }
 
-class AutoBlogifyAPI {
+class GEOPilotAPI {
     constructor(config) {
         this.config = config;
         this.cache = new Map();
@@ -3813,7 +3813,7 @@ class AutoBlogifyAPI {
             const message = ((_c = (_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.error) === null || _c === void 0 ? void 0 : _c.message) || error.message;
             const code = (_f = (_e = (_d = error.response) === null || _d === void 0 ? void 0 : _d.data) === null || _e === void 0 ? void 0 : _e.error) === null || _f === void 0 ? void 0 : _f.code;
             const statusCode = (_g = error.response) === null || _g === void 0 ? void 0 : _g.status;
-            throw new AutoBlogifyError(message, code, statusCode);
+            throw new GEOPilotError(message, code, statusCode);
         });
     }
     /**
@@ -3859,7 +3859,7 @@ class AutoBlogifyAPI {
         }
         const response = await this.client.get(endpoint, { params });
         if (!response.data.success) {
-            throw new AutoBlogifyError(((_a = response.data.error) === null || _a === void 0 ? void 0 : _a.message) || 'Request failed', (_b = response.data.error) === null || _b === void 0 ? void 0 : _b.code);
+            throw new GEOPilotError(((_a = response.data.error) === null || _a === void 0 ? void 0 : _a.message) || 'Request failed', (_b = response.data.error) === null || _b === void 0 ? void 0 : _b.code);
         }
         this.setCache(cacheKey, response.data.data, ttl);
         return response.data.data;
@@ -4064,16 +4064,16 @@ class AutoBlogifyAPI {
     }
 }
 
-const AutoBlogifyContext = createContext({
+const GEOPilotContext = createContext({
     api: null,
     apiReady: false,
     config: null,
     updateConfig: () => { }
 });
-function useAutoBlogify() {
-    const context = useContext(AutoBlogifyContext);
+function useGEOPilot() {
+    const context = useContext(GEOPilotContext);
     if (!context) {
-        throw new Error('useAutoBlogify must be used within an AutoBlogifyProvider');
+        throw new Error('useGEOPilot must be used within a GEOPilotProvider');
     }
     return context;
 }
@@ -4418,7 +4418,7 @@ function applyBodyFontStyles(design, baseStyles = {}) {
     };
 }
 
-function AutoBlogifyProvider({ config, children }) {
+function GEOPilotProvider({ config, children }) {
     const [api, setApi] = useState(null);
     const [apiReady, setApiReady] = useState(false);
     const [currentConfig, setCurrentConfig] = useState(config);
@@ -4427,7 +4427,7 @@ function AutoBlogifyProvider({ config, children }) {
     const [designError, setDesignError] = useState(null);
     // Initialize API first
     useEffect(() => {
-        const apiInstance = new AutoBlogifyAPI(currentConfig);
+        const apiInstance = new GEOPilotAPI(currentConfig);
         setApi(apiInstance);
         setApiReady(true);
     }, [currentConfig]);
@@ -4698,12 +4698,12 @@ function AutoBlogifyProvider({ config, children }) {
         designLoading,
         designError
     };
-    return (jsx(AutoBlogifyContext.Provider, { value: contextValue, children: children }));
+    return (jsx(GEOPilotContext.Provider, { value: contextValue, children: children }));
 }
 
 function useBlogPosts(options = {}) {
     const { page = 1, limit = 10, category, tag, search, filters, autoFetch = true, enableInfiniteScroll = false } = options;
-    const { api, apiReady } = useAutoBlogify();
+    const { api, apiReady } = useGEOPilot();
     const [posts, setPosts] = useState([]);
     const [pagination, setPagination] = useState({
         total: 0,
@@ -4826,7 +4826,7 @@ function useBlogPosts(options = {}) {
 
 function useBlogMetadata(options = {}) {
     const { autoFetch = true } = options;
-    const { api, apiReady } = useAutoBlogify();
+    const { api, apiReady } = useGEOPilot();
     const [metadata, setMetadata] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -5065,7 +5065,7 @@ function generateFallbackSEO(post, config, type = 'post') {
 
 function useBlogPost(options = {}) {
     const { postId, slug, autoFetch = true, trackView = true } = options;
-    const { api } = useAutoBlogify();
+    const { api } = useGEOPilot();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -5332,7 +5332,7 @@ function OptimizedImage({ src, alt, width = 400, height = 300, aspectRatio, load
 
 function BlogSiteHeader({ websiteName = "Website's Blog", blogHomeUrl = "/", mainWebsiteUrl = "/", logoUrl, navigationItems = [], className = '', style }) {
     var _a, _b, _c, _d;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const headerClasses = useMemo(() => {
         return `
       auto-blogify-site-header
@@ -8582,7 +8582,7 @@ function extractDomain(url) {
 
 function ContentFreshness({ publishedAt, updatedAt, showIndicator = true, showLastUpdated = true, freshnessThreshold = 30, // 30 days
 className = '', style }) {
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const freshnessData = useMemo(() => {
         const now = new Date();
         const published = new Date(publishedAt);
@@ -8689,7 +8689,7 @@ className = '', style }) {
 
 function BlogPostMetadata({ title, coverImage, publishDate, updatedDate, author, readingTime, showContentFreshness = false, className = '', style }) {
     var _a, _b;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const containerClasses = useMemo(() => {
         return `
       auto-blogify-post-metadata
@@ -8716,7 +8716,7 @@ function BlogPostMetadata({ title, coverImage, publishDate, updatedDate, author,
 
 function BlogTableOfContents({ items, isSticky = true, position = 'right', className = '', style }) {
     var _a, _b, _c, _d, _e, _f, _g, _h;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const [activeId, setActiveId] = useState('');
     const [isVisible, setIsVisible] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -8870,7 +8870,7 @@ function BlogTableOfContents({ items, isSticky = true, position = 'right', class
 }
 
 function BlogSocialShare({ url, title, description = '', platforms = ['twitter', 'facebook', 'linkedin'], position = 'inline', className = '', style }) {
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const containerClasses = useMemo(() => {
         const baseClasses = 'auto-blogify-social-share';
         const positionClasses = {
@@ -8919,7 +8919,7 @@ function BlogSocialShare({ url, title, description = '', platforms = ['twitter',
 
 function BlogConclusionFAQ({ conclusion, faqItems = [], title = "Answering Your Top Questions", className = '', style }) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const [openFAQ, setOpenFAQ] = useState(null);
     const containerClasses = useMemo(() => {
         return `
@@ -8964,7 +8964,7 @@ function BlogConclusionFAQ({ conclusion, faqItems = [], title = "Answering Your 
 
 function BlogCTAFooter({ ctaButtons = [], footerText = "© 2024 Your Website. All rights reserved.", showFooter = true, className = '', style }) {
     var _a, _b;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const containerClasses = useMemo(() => {
         return `
       auto-blogify-cta-footer
@@ -9007,7 +9007,7 @@ function BlogCTAFooter({ ctaButtons = [], footerText = "© 2024 Your Website. Al
 }
 
 function BlogRelatedPosts({ config, postId, limit = 3, onPostClick, className = '' }) {
-    const { api } = useAutoBlogify();
+    const { api } = useGEOPilot();
     const [relatedPosts, setRelatedPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -9510,7 +9510,7 @@ function SEOHead({ post, config, title, description, image, url, type = post ? '
 }
 
 function Breadcrumbs({ items, showHome = true, homeLabel = 'Home', homeUrl = '/', separator = '/', className = '', style, enableStructuredData = true }) {
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const breadcrumbItems = useMemo(() => {
         const allItems = [];
         if (showHome) {
@@ -9684,7 +9684,7 @@ function generateStructuredContent(content, options = {}) {
 
 function BlogPost({ config, postId, slug, onBack, showRelatedPosts = true, enableComments = false, enableSharing = true, websiteName = "Website's Blog", blogHomeUrl = "/", mainWebsiteUrl = "/", logoUrl, navigationItems = [], showSiteHeader = true, showTOC = true, showSocialShare = true, showConclusionFAQ = true, showCTAFooter = true, showBreadcrumbs = true, showContentFreshness = true, conclusion, faqItems = [], ctaButtons = [], footerText, className = '', style }) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const { post, loading, error, refetch } = useBlogPost({
         postId,
         slug,
@@ -9820,7 +9820,7 @@ const BlogSearchSection = React.memo(function BlogSearchSection({ config, blogSt
 
 function BlogCard({ post, config, onClick, showAuthor = true, showDate = true, showReadingTime = true, showCategories = true, showTags = false, showExcerpt = true, showFeaturedImage = true, showContentFreshness = false, className = '', style }) {
     var _a, _b, _c, _d, _e, _f;
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     // Get component settings from design configuration
     const componentSettings = getComponentSettings(design, 'blogCard');
     const cardClasses = useMemo(() => {
@@ -9982,7 +9982,7 @@ const BlogMainContent = React.memo(function BlogMainContent({ config, design, po
 });
 
 function BlogTags({ config, onTagClick, showPostCount = false, maxTags = 20, style = 'pills', className = '' }) {
-    const { api, apiReady } = useAutoBlogify();
+    const { api, apiReady } = useGEOPilot();
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -10084,7 +10084,7 @@ function BlogFullScreen(props) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
     const { config, page, limit, searchQuery, onPostClick, className = '', style } = props;
     // Hooks
-    const { design } = useAutoBlogify();
+    const { design } = useGEOPilot();
     const blogState = useBlogState({ page, searchQuery });
     const finalLimit = limit !== null && limit !== void 0 ? limit : 12;
     const { posts, pagination, loading, error, refetch } = useBlogPosts({
@@ -10243,5 +10243,5 @@ const defaultConfig = {
 // Version
 const SDK_VERSION = '2.2.4';
 
-export { AutoBlogifyAPI, AutoBlogifyProvider, BlogFullScreen, BlogTags, SDK_VERSION, addIdsToHeadings, applyBodyFontStyles, applyDesignStyles, applyHeadingFontStyles, calculateReadingTime, defaultConfig, extractDomain, extractHeadingsFromContent, formatCategories, formatDate, formatFileSize, formatNumber, formatReadingTime, formatRelativeDate, formatTags, formatUrl, formatWordCount, generateExcerpt, generateStructuredContent, getBodyFontFamilyCSS, getCSSVariables, getComponentSettings, getFirstParagraph, getFontFamilyCSS, getHeadingFontFamilyCSS, getLayoutClasses$1 as getLayoutClasses, getWordCount, isValidUrl, mergeThemeConfig, parseContentIntoSections, slugify, stringToColor, stripHtml, titleCase, truncateText, useAutoBlogify, useBlogMetadata, useBlogPosts, useSEO };
+export { BlogFullScreen, BlogTags, GEOPilotAPI, GEOPilotProvider, SDK_VERSION, addIdsToHeadings, applyBodyFontStyles, applyDesignStyles, applyHeadingFontStyles, calculateReadingTime, defaultConfig, extractDomain, extractHeadingsFromContent, formatCategories, formatDate, formatFileSize, formatNumber, formatReadingTime, formatRelativeDate, formatTags, formatUrl, formatWordCount, generateExcerpt, generateStructuredContent, getBodyFontFamilyCSS, getCSSVariables, getComponentSettings, getFirstParagraph, getFontFamilyCSS, getHeadingFontFamilyCSS, getLayoutClasses$1 as getLayoutClasses, getWordCount, isValidUrl, mergeThemeConfig, parseContentIntoSections, slugify, stringToColor, stripHtml, titleCase, truncateText, useBlogMetadata, useBlogPosts, useGEOPilot, useSEO };
 //# sourceMappingURL=index.esm.js.map

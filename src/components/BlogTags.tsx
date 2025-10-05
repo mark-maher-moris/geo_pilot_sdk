@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
-import { AutoBlogifyConfig } from '../types';
+import { useGEOPilot } from '../hooks/useGEOPilot';
+import { GEOPilotConfig } from '../types';
 
 export interface BlogTagsProps {
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   onTagClick?: (tag: string) => void;
   showPostCount?: boolean;
   maxTags?: number;
@@ -20,7 +20,7 @@ export function BlogTags({
   style = 'pills',
   className = ''
 }: BlogTagsProps) {
-  const { api, apiReady } = useAutoBlogify();
+  const { api, apiReady } = useGEOPilot();
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

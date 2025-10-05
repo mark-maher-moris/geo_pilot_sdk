@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAutoBlogify } from './useAutoBlogify';
+import { useGEOPilot } from './useGEOPilot';
 import {
   BlogMetadata,
   UseBlogMetadataResult
@@ -11,7 +11,7 @@ export interface UseBlogMetadataOptions {
 
 export function useBlogMetadata(options: UseBlogMetadataOptions = {}): UseBlogMetadataResult {
   const { autoFetch = true } = options;
-  const { api, apiReady } = useAutoBlogify();
+  const { api, apiReady } = useGEOPilot();
   const [metadata, setMetadata] = useState<BlogMetadata | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

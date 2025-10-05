@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles, applyHeadingFontStyles, getHeadingFontFamilyCSS } from '../utils/themeUtils';
 import { formatDate } from '../utils/formatters';
 import { OptimizedImage } from './OptimizedImage';
@@ -29,7 +29,7 @@ export function BlogPostMetadata({
   className = '',
   style
 }: BlogPostMetadataProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
 
   const containerClasses = useMemo(() => {
     return `

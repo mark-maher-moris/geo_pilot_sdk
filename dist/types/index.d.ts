@@ -52,7 +52,7 @@ export interface BlogCategoriesResponse {
 export interface BlogTagsResponse {
     tags: string[];
 }
-export interface AutoBlogifyConfig {
+export interface GEOPilotConfig {
     apiUrl: string;
     projectId: string;
     apiKey?: string;
@@ -119,7 +119,7 @@ export interface SearchFilters {
     sortOrder?: 'asc' | 'desc';
 }
 export interface BlogComponentProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     className?: string;
     style?: any;
 }
@@ -200,7 +200,7 @@ export interface PerformanceConfig {
     enableContentPreloading: boolean;
     cache: CacheConfig;
 }
-export declare class AutoBlogifyError extends Error {
+export declare class GEOPilotError extends Error {
     code?: string;
     statusCode?: number;
     constructor(message: string, code?: string, statusCode?: number);

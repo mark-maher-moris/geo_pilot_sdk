@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import {
-  AutoBlogifyConfig,
+  GEOPilotConfig,
   BlogPost,
   BlogPostsResponse,
   BlogPostResponse,
@@ -9,16 +9,16 @@ import {
   BlogTagsResponse,
   SearchFilters,
   ApiResponse,
-  AutoBlogifyError,
+  GEOPilotError,
   AnalyticsEvent
 } from '../types';
 
-export class AutoBlogifyAPI {
+export class GEOPilotAPI {
   private client: AxiosInstance;
-  private config: AutoBlogifyConfig;
+  private config: GEOPilotConfig;
   private cache: Map<string, { data: any; timestamp: number; ttl: number }>;
 
-  constructor(config: AutoBlogifyConfig) {
+  constructor(config: GEOPilotConfig) {
     this.config = config;
     this.cache = new Map();
     
@@ -57,7 +57,7 @@ export class AutoBlogifyAPI {
         const code = error.response?.data?.error?.code;
         const statusCode = error.response?.status;
         
-        throw new AutoBlogifyError(message, code, statusCode);
+        throw new GEOPilotError(message, code, statusCode);
       }
     );
   }
@@ -115,7 +115,7 @@ export class AutoBlogifyAPI {
     const response = await this.client.get<ApiResponse<T>>(endpoint, { params });
     
     if (!response.data.success) {
-      throw new AutoBlogifyError(
+      throw new GEOPilotError(
         response.data.error?.message || 'Request failed',
         response.data.error?.code
       );
@@ -415,7 +415,7 @@ export class AutoBlogifyAPI {
   /**
    * Update configuration
    */
-  updateConfig(newConfig: Partial<AutoBlogifyConfig>): void {
+  updateConfig(newConfig: Partial<GEOPilotConfig>): void {
     this.config = { ...this.config, ...newConfig };
     
     // Update client base URL if changed
@@ -445,4 +445,4 @@ export class AutoBlogifyAPI {
   }
 }
 
-export default AutoBlogifyAPI;
+export default GEOPilotAPI;

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { BlogPagination } from '../../BlogPagination';
 import { BlogPagination as PaginationType, BlogState } from '../types';
-import { AutoBlogifyConfig } from '../../../types';
+import { GEOPilotConfig } from '../../../types';
 
 interface BlogPaginationSectionProps {
   pagination: PaginationType;
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   blogState: BlogState;
   showPagination: boolean;
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles, applyHeadingFontStyles } from '../utils/themeUtils';
 import { OptimizedImage } from './OptimizedImage';
 
@@ -26,7 +26,7 @@ export function BlogSiteHeader({
   className = '',
   style
 }: BlogSiteHeaderProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
 
   const headerClasses = useMemo(() => {
     return `

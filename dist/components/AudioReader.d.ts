@@ -1,7 +1,7 @@
-import { AutoBlogifyConfig, BlogPost } from '../types';
+import { GEOPilotConfig, BlogPost } from '../types';
 export interface AudioReaderProps {
     post: BlogPost;
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     className?: string;
     style?: any;
 }

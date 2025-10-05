@@ -1,4 +1,4 @@
-export { AutoBlogifyProvider } from './AutoBlogifyProvider';
+export { GEOPilotProvider } from './GEOPilotProvider';
 export { BlogFullScreen } from './BlogFullScreen';
 export { BlogPost } from './BlogPost';
 export { SEOHead } from './SEOHead';

@@ -1,6 +1,6 @@
-import { AutoBlogifyConfig, BlogPost } from '../types';
+import { GEOPilotConfig, BlogPost } from '../types';
 export interface BlogRelatedPostsProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     postId: string;
     limit?: number;
     onPostClick?: (post: BlogPost) => void;

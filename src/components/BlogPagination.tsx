@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Pagination, AutoBlogifyConfig } from '../types';
+import { Pagination, GEOPilotConfig } from '../types';
 
 export interface BlogPaginationProps {
   pagination: Pagination;
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   onPageChange: (page: number) => void;
   showFirstLast?: boolean;
   showPrevNext?: boolean;

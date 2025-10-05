@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles } from '../utils/themeUtils';
 
 export interface BreadcrumbItem {
@@ -30,7 +30,7 @@ export function Breadcrumbs({
   style,
   enableStructuredData = true
 }: BreadcrumbsProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
 
   const breadcrumbItems = useMemo(() => {
     const allItems: BreadcrumbItem[] = [];

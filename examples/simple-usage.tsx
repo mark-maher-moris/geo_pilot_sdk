@@ -1,11 +1,11 @@
 import React from 'react';
-import { AutoBlogifyProvider, BlogFullScreen, defaultConfig } from '@auto-blogify/sdk';
+import { GEOPilotProvider, BlogFullScreen, defaultConfig } from '@geo-pilot/sdk';
 
 // Simple usage example - just wrap your app and use BlogFullScreen
 // The SDK now automatically reads styling and configuration from the backend
 export default function SimpleBlogIntegration() {
   return (
-    <AutoBlogifyProvider 
+    <GEOPilotProvider 
       config={{
         ...defaultConfig,
         apiUrl: "https://your-api-domain.com/api",
@@ -16,7 +16,7 @@ export default function SimpleBlogIntegration() {
         <h1>My Website</h1>
         
         {/* BlogFullScreen automatically uses backend configuration */}
-        {/* All styling, layout, and settings come from your Auto Blogify dashboard */}
+        {/* All styling, layout, and settings come from your GEO Pilot dashboard */}
         <BlogFullScreen 
           config={{
             ...defaultConfig,
@@ -25,7 +25,7 @@ export default function SimpleBlogIntegration() {
           }}
         />
       </div>
-    </AutoBlogifyProvider>
+    </GEOPilotProvider>
   );
 }
 

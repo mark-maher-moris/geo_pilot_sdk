@@ -1,6 +1,6 @@
 // Main SDK exports - Simplified to focus on BlogFullScreen component
-export { AutoBlogifyProvider } from './components/AutoBlogifyProvider';
-export { AutoBlogifyAPI } from './services/api';
+export { GEOPilotProvider } from './components/GEOPilotProvider';
+export { GEOPilotAPI } from './services/api';
 
 // Main component - BlogFullScreen is the primary component for easy integration
 export { BlogFullScreen } from './components/BlogFullScreen';
@@ -12,12 +12,12 @@ export { BlogTags } from './components/BlogTags';
 export { useBlogPosts } from './hooks/useBlogPosts';
 export { useBlogMetadata } from './hooks/useBlogMetadata';
 export { useSEO } from './hooks/useSEO';
-export { useAutoBlogify } from './hooks/useAutoBlogify';
+export { useGEOPilot } from './hooks/useGEOPilot';
 
 // Essential types for BlogFullScreen
 export type {
   BlogFullScreenProps,
-  AutoBlogifyConfig,
+  GEOPilotConfig,
   ThemeConfig,
   SEOConfig,
   GEOConfig,
@@ -34,7 +34,7 @@ export type {
   LoadingState,
   CacheConfig,
   PerformanceConfig,
-  AutoBlogifyError,
+  GEOPilotError,
   AnalyticsEvent,
   UseBlogPostsResult,
   UseBlogMetadataResult

@@ -1,5 +1,5 @@
 // Main components - Simplified for BlogFullScreen integration
-export { AutoBlogifyProvider } from './AutoBlogifyProvider';
+export { GEOPilotProvider } from './GEOPilotProvider';
 export { BlogFullScreen } from './BlogFullScreen';
 
 // Essential components used by BlogFullScreen

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles } from '../utils/themeUtils';
 
 export interface BlogSocialShareProps {
@@ -22,7 +22,7 @@ export function BlogSocialShare({
   className = '',
   style
 }: BlogSocialShareProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
 
   const containerClasses = useMemo(() => {
     const baseClasses = 'auto-blogify-social-share';

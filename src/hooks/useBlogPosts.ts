@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAutoBlogify } from './useAutoBlogify';
+import { useGEOPilot } from './useGEOPilot';
 import {
   BlogPost,
   Pagination,
@@ -30,7 +30,7 @@ export function useBlogPosts(options: UseBlogPostsOptions = {}): UseBlogPostsRes
     enableInfiniteScroll = false
   } = options;
 
-  const { api, apiReady } = useAutoBlogify();
+  const { api, apiReady } = useGEOPilot();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,

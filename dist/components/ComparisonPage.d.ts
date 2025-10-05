@@ -1,6 +1,6 @@
-import { AutoBlogifyConfig } from '../types';
+import { GEOPilotConfig } from '../types';
 export interface ComparisonPageProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     slug: string;
     className?: string;
     style?: any;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAutoBlogify } from './useAutoBlogify';
+import { useGEOPilot } from './useGEOPilot';
 import {
   BlogPost,
   UseBlogPostResult
@@ -20,7 +20,7 @@ export function useBlogPost(options: UseBlogPostOptions = {}): UseBlogPostResult
     trackView = true
   } = options;
 
-  const { api } = useAutoBlogify();
+  const { api } = useGEOPilot();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

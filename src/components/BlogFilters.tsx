@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
-import { SearchFilters, AutoBlogifyConfig } from '../types';
+import { useGEOPilot } from '../hooks/useGEOPilot';
+import { SearchFilters, GEOPilotConfig } from '../types';
 
 export interface BlogFiltersProps {
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   onFilterChange: (filters: SearchFilters) => void;
   currentFilters?: SearchFilters;
   className?: string;
@@ -16,7 +16,7 @@ export function BlogFilters({
   currentFilters = {},
   className = ''
 }: BlogFiltersProps) {
-  const { api, apiReady } = useAutoBlogify();
+  const { api, apiReady } = useGEOPilot();
   const [categories, setCategories] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [filters, setFilters] = useState<SearchFilters>(currentFilters);

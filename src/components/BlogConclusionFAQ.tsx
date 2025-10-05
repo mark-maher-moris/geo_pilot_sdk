@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles, applyHeadingFontStyles, applyBodyFontStyles, getHeadingFontFamilyCSS, getBodyFontFamilyCSS } from '../utils/themeUtils';
 
 export interface FAQItem {
@@ -24,7 +24,7 @@ export function BlogConclusionFAQ({
   className = '',
   style
 }: BlogConclusionFAQProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
 
   const containerClasses = useMemo(() => {

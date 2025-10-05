@@ -9,11 +9,11 @@ import {
   ComponentSettings, 
   BlogState 
 } from './types';
-import { AutoBlogifyConfig } from '../../types';
+import { GEOPilotConfig } from '../../types';
 import { createDefaultLayout } from './utils/layoutUtils';
 
 interface BlogMainContentProps {
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   design: any; // Keep as any for now since it's used elsewhere
   posts: BlogPost[];
   loading: boolean;

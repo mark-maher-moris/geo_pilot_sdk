@@ -1,12 +1,12 @@
-export { AutoBlogifyProvider } from './components/AutoBlogifyProvider';
-export { AutoBlogifyAPI } from './services/api';
+export { GEOPilotProvider } from './components/GEOPilotProvider';
+export { GEOPilotAPI } from './services/api';
 export { BlogFullScreen } from './components/BlogFullScreen';
 export { BlogTags } from './components/BlogTags';
 export { useBlogPosts } from './hooks/useBlogPosts';
 export { useBlogMetadata } from './hooks/useBlogMetadata';
 export { useSEO } from './hooks/useSEO';
-export { useAutoBlogify } from './hooks/useAutoBlogify';
-export type { BlogFullScreenProps, AutoBlogifyConfig, ThemeConfig, SEOConfig, GEOConfig, BlogPost, BlogMetadata, Pagination, BlogPostsResponse, BlogPostResponse, BlogMetadataResponse, MetaTag, AnalyticsData, SearchFilters, ApiResponse, LoadingState, CacheConfig, PerformanceConfig, AutoBlogifyError, AnalyticsEvent, UseBlogPostsResult, UseBlogMetadataResult } from './types';
+export { useGEOPilot } from './hooks/useGEOPilot';
+export type { BlogFullScreenProps, GEOPilotConfig, ThemeConfig, SEOConfig, GEOConfig, BlogPost, BlogMetadata, Pagination, BlogPostsResponse, BlogPostResponse, BlogMetadataResponse, MetaTag, AnalyticsData, SearchFilters, ApiResponse, LoadingState, CacheConfig, PerformanceConfig, GEOPilotError, AnalyticsEvent, UseBlogPostsResult, UseBlogMetadataResult } from './types';
 export * from './utils/themeUtils';
 export * from './utils/formatters';
 export * from './utils/contentUtils';

@@ -1,4 +1,4 @@
-import { BlogPost, AutoBlogifyConfig } from '../types';
+import { BlogPost, GEOPilotConfig } from '../types';
 export interface SEOMetaTags {
     title: string;
     description: string;
@@ -36,8 +36,8 @@ export interface SEOData {
     loading: boolean;
     error: string | null;
 }
-export declare function useSEO(config: AutoBlogifyConfig, post?: BlogPost, type?: 'blog' | 'post'): SEOData;
-export declare function useSEOAnalysis(config: AutoBlogifyConfig, post?: BlogPost): {
+export declare function useSEO(config: GEOPilotConfig, post?: BlogPost, type?: 'blog' | 'post'): SEOData;
+export declare function useSEOAnalysis(config: GEOPilotConfig, post?: BlogPost): {
     analysis: any;
     loading: boolean;
     error: string;

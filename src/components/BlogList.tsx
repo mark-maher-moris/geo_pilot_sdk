@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useMemo } from 'react';
 import { useBlogPosts } from '../hooks/useBlogPosts';
 import { useSEO } from '../hooks/useSEO';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { BlogListProps } from '../types';
 import { BlogCard } from './BlogCard';
 import { BlogPagination } from './BlogPagination';
@@ -28,7 +28,7 @@ export function BlogList({
   className = '',
   style
 }: BlogListProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
   
   const {
     posts,

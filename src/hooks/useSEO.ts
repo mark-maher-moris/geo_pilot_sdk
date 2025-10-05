@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BlogPost, AutoBlogifyConfig } from '../types';
+import { BlogPost, GEOPilotConfig } from '../types';
 
 export interface SEOMetaTags {
   title: string;
@@ -41,7 +41,7 @@ export interface SEOData {
 }
 
 export function useSEO(
-  config: AutoBlogifyConfig,
+  config: GEOPilotConfig,
   post?: BlogPost,
   type: 'blog' | 'post' = 'post'
 ): SEOData {
@@ -122,7 +122,7 @@ export function useSEO(
 // Fallback SEO data generation
 function generateFallbackSEO(
   post?: BlogPost,
-  config?: AutoBlogifyConfig,
+  config?: GEOPilotConfig,
   type: 'blog' | 'post' = 'post'
 ): { metaTags: SEOMetaTags; structuredData: any[] } {
   const baseUrl = config?.customDomain || (typeof window !== 'undefined' ? window.location.origin : '');
@@ -232,7 +232,7 @@ function generateFallbackSEO(
 }
 
 // Hook for SEO analysis
-export function useSEOAnalysis(config: AutoBlogifyConfig, post?: BlogPost) {
+export function useSEOAnalysis(config: GEOPilotConfig, post?: BlogPost) {
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { BlogPost, BlogLayout, ComponentSettings } from '../types';
-import { AutoBlogifyConfig } from '../../../types';
+import { GEOPilotConfig } from '../../../types';
 interface BlogPostsGridProps {
     posts: BlogPost[];
     loading: boolean;
     layout: BlogLayout;
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     componentSettings: ComponentSettings;
     blogState: {
         currentSearch: string;

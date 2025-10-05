@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAutoBlogify } from './useAutoBlogify';
+import { useGEOPilot } from './useGEOPilot';
 import { BlogDesignConfig } from '../types';
 
 export interface UseBlogDesignResult {
@@ -11,7 +11,7 @@ export interface UseBlogDesignResult {
 }
 
 export function useBlogDesign(): UseBlogDesignResult {
-  const { api, config } = useAutoBlogify();
+  const { api, config } = useGEOPilot();
   const [design, setDesign] = useState<BlogDesignConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

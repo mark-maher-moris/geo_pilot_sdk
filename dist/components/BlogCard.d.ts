@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { BlogPost, AutoBlogifyConfig } from '../types';
+import { BlogPost, GEOPilotConfig } from '../types';
 export interface BlogCardProps {
     post: BlogPost;
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     onClick?: () => void;
     showAuthor?: boolean;
     showDate?: boolean;

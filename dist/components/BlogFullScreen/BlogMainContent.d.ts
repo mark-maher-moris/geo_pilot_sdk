@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { BlogPost, BlogPagination, BlogLayout, ComponentSettings, BlogState } from './types';
-import { AutoBlogifyConfig } from '../../types';
+import { GEOPilotConfig } from '../../types';
 interface BlogMainContentProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     design: any;
     posts: BlogPost[];
     loading: boolean;

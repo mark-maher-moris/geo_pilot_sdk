@@ -1,6 +1,6 @@
-import { AutoBlogifyConfig } from '../types';
+import { GEOPilotConfig } from '../types';
 export interface BlogCategoriesProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     onCategoryClick?: (category: string) => void;
     showPostCount?: boolean;
     maxCategories?: number;

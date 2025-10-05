@@ -1,6 +1,6 @@
-import { AutoBlogifyConfig } from '../types';
+import { GEOPilotConfig } from '../types';
 export interface BlogTagsProps {
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     onTagClick?: (tag: string) => void;
     showPostCount?: boolean;
     maxTags?: number;

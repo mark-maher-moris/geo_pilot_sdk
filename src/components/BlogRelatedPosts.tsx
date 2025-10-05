@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
-import { AutoBlogifyConfig, BlogPost } from '../types';
+import { useGEOPilot } from '../hooks/useGEOPilot';
+import { GEOPilotConfig, BlogPost } from '../types';
 import { OptimizedImage } from './OptimizedImage';
 
 export interface BlogRelatedPostsProps {
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   postId: string;
   limit?: number;
   onPostClick?: (post: BlogPost) => void;
@@ -19,7 +19,7 @@ export function BlogRelatedPosts({
   onPostClick,
   className = ''
 }: BlogRelatedPostsProps) {
-  const { api } = useAutoBlogify();
+  const { api } = useGEOPilot();
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

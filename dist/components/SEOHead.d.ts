@@ -1,7 +1,7 @@
-import { BlogPost, AutoBlogifyConfig } from '../types';
+import { BlogPost, GEOPilotConfig } from '../types';
 export interface SEOHeadProps {
     post?: BlogPost;
-    config: AutoBlogifyConfig;
+    config: GEOPilotConfig;
     title?: string;
     description?: string;
     image?: string;

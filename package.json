@@ -1,7 +1,7 @@
 {
-  "name": "@auto-blogify/sdk",
-  "version": "2.2.4",
-  "description": "Auto Blogify SDK - Simple BlogFullScreen component for easy blog integration",
+  "name": "@geo-pilot/sdk",
+  "version": "1.0.0",
+  "description": "GEO Pilot SDK - Advanced geospatial blog and content management system for modern web applications",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -19,25 +19,28 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "auto-blogify",
+    "geo-pilot",
+    "geospatial",
     "blog",
     "nextjs",
     "react",
     "seo",
     "geo",
     "cms",
-    "headless"
+    "headless",
+    "mapping",
+    "location-based"
   ],
-  "author": "Auto Blogify Team",
+  "author": "GEO Pilot Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/auto-blogify/sdk.git"
+    "url": "https://github.com/mark-maher-moris/geo_pilot_sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/auto-blogify/sdk/issues"
+    "url": "https://github.com/mark-maher-moris/geo_pilot_sdk/issues"
   },
-  "homepage": "https://auto-blogify.com",
+  "homepage": "https://geopilot.buildagon.com",
   "peerDependencies": {
     "next": ">=12.0.0",
     "react": ">=16.8.0",

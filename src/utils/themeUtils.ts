@@ -1,13 +1,13 @@
-import { AutoBlogifyConfig, BlogDesignConfig, ThemeConfig } from '../types';
+import { GEOPilotConfig, BlogDesignConfig, ThemeConfig } from '../types';
 
 /**
  * Merges static theme configuration with dynamic design configuration
  * Dynamic design takes precedence over static theme
  */
 export function mergeThemeConfig(
-  staticConfig: AutoBlogifyConfig,
+  staticConfig: GEOPilotConfig,
   dynamicDesign?: BlogDesignConfig | null
-): AutoBlogifyConfig {
+): GEOPilotConfig {
   if (!dynamicDesign) {
     return staticConfig;
   }

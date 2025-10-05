@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { BlogPost, AutoBlogifyConfig } from '../types';
+import { BlogPost, GEOPilotConfig } from '../types';
 import { formatDate, formatReadingTime } from '../utils/formatters';
-import { useAutoBlogify } from '../hooks/useAutoBlogify';
+import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles, getComponentSettings } from '../utils/themeUtils';
 import { OptimizedImage } from './OptimizedImage';
 import { ContentFreshness } from './ContentFreshness';
 
 export interface BlogCardProps {
   post: BlogPost;
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   onClick?: () => void;
   showAuthor?: boolean;
   showDate?: boolean;
@@ -38,7 +38,7 @@ export function BlogCard({
   className = '',
   style
 }: BlogCardProps) {
-  const { design } = useAutoBlogify();
+  const { design } = useGEOPilot();
   
   // Get component settings from design configuration
   const componentSettings = getComponentSettings(design, 'blogCard');

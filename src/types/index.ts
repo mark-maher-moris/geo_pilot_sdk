@@ -1,4 +1,4 @@
-// Core types for the Auto Blogify SDK
+// Core types for the GEO Pilot SDK
 
 export interface BlogPost {
   id: string;
@@ -62,7 +62,7 @@ export interface BlogTagsResponse {
   tags: string[];
 }
 
-export interface AutoBlogifyConfig {
+export interface GEOPilotConfig {
   apiUrl: string;
   projectId: string;
   apiKey?: string;
@@ -137,7 +137,7 @@ export interface SearchFilters {
 }
 
 export interface BlogComponentProps {
-  config: AutoBlogifyConfig;
+  config: GEOPilotConfig;
   className?: string;
   style?: any;
 }
@@ -236,14 +236,14 @@ export interface PerformanceConfig {
 }
 
 // Error types
-export class AutoBlogifyError extends Error {
+export class GEOPilotError extends Error {
   constructor(
     message: string,
     public code?: string,
     public statusCode?: number
   ) {
     super(message);
-    this.name = 'AutoBlogifyError';
+    this.name = 'GEOPilotError';
   }
 }
 
