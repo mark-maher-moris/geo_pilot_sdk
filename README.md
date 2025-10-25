@@ -1,15 +1,17 @@
-# GEO Pilot SDK
+# Geo Pilot SDK
 
 Integrate advanced geospatial blog and content management capabilities into any Next.js app in minutes.
 
 ## What you get
 
-- Easy drop-in components (Next.js friendly)
-- Advanced geospatial features and location-based content
-- SEO-ready (meta, JSON-LD, sitemaps)
-- Fully backend-driven styling/settings from your GEO Pilot dashboard
-- Geo, analytics, TypeScript support
-- Location-based content targeting and filtering
+- **Easy drop-in components** (Next.js friendly)
+- **Advanced geospatial features** and location-based content
+- **SEO-ready** (meta tags, JSON-LD, sitemaps)
+- **Fully backend-driven** styling and settings from your Geo Pilot dashboard
+- **TypeScript support** with comprehensive type definitions
+- **Performance optimized** with lazy loading and caching
+- **Responsive design** that works on all devices
+- **Accessibility compliant** (WCAG 2.1 AA)
 
 ## Install
 
@@ -24,8 +26,8 @@ yarn add @geo-pilot/sdk
 1) Add environment variables (e.g. `.env.local`)
 
 ```env
-NEXT_PUBLIC_GEO_PILOT_API_URL=https://your-api-domain.com/api
 NEXT_PUBLIC_GEO_PILOT_PROJECT_ID=your-project-id
+NEXT_PUBLIC_GEO_PILOT_SECRET_KEY=your-secret-key
 ```
 
 2) Wrap your app
@@ -37,7 +39,11 @@ import { GEOPilotProvider, defaultConfig } from '@geo-pilot/sdk';
 export default function Layout({ children }) {
   return (
     <GEOPilotProvider 
-      config={defaultConfig}
+      config={{
+        ...defaultConfig,
+        projectId: process.env.NEXT_PUBLIC_GEO_PILOT_PROJECT_ID!,
+        secretKey: process.env.NEXT_PUBLIC_GEO_PILOT_SECRET_KEY!
+      }}
     >
       {children}
     </GEOPilotProvider>
@@ -58,74 +64,110 @@ export default function BlogPage() {
 }
 ```
 
-That's it. All styling, layout, typography, and component visibility are controlled in your GEO Pilot dashboard.
+That's it! All styling, layout, typography, and component visibility are controlled from your Geo Pilot dashboard.
 
-## Minimal config (optional)
+## BlogFullScreen Component
+
+The main all-in-one blog component that provides a complete blogging experience:
+
+```tsx
+import { BlogFullScreen } from '@geo-pilot/sdk';
+
+<BlogFullScreen 
+  // Optional props
+  page={1}
+  limit={10}
+  category="tech"
+  searchQuery="react"
+  onPostClick={(post) => console.log('Post clicked:', post)}
+/>
+```
+
+## Configuration
+
+The SDK uses a fixed API URL and only requires your project credentials:
+
+```tsx
+const config = {
+  projectId: 'your-project-id',
+  secretKey: 'your-secret-key'
+};
+```
+
+## Advanced Usage
+
+### Custom Styling
+
+```tsx
+<BlogFullScreen 
+  className="my-custom-blog-styles"
+  style={{ maxWidth: '1200px', margin: '0 auto' }}
+/>
+```
+
+### With Custom Configuration
 
 ```tsx
 <BlogFullScreen 
   config={{
-    apiUrl: 'https://your-api-domain.com/api',
-    projectId: 'your-project-id'
+    projectId: 'your-project-id',
+    secretKey: 'your-secret-key',
+    // All other settings come from your Geo Pilot dashboard
   }}
 />
 ```
 
-## Key components
-
-- BlogFullScreen: All-in-one blog UI (list, filters, post view, pagination)
-- SEOHead: Drop-in SEO tags for pages/posts
-
-## Useful hooks
-
-- useBlogPosts: List and paginate posts
-- useBlogPost: Fetch a single post by slug/id
-- useBlogMetadata: Read blog metadata/config
-
-Example:
+## Complete Example
 
 ```tsx
-import { useBlogPosts } from '@geo-pilot/sdk';
+import { GEOPilotProvider, BlogFullScreen, defaultConfig } from '@geo-pilot/sdk';
 
-function Posts() {
-  const { posts, loading } = useBlogPosts({ page: 1, limit: 10 });
-  if (loading) return <div>Loading...</div>;
+export default function BlogPage() {
+  const config = {
+    ...defaultConfig,
+    projectId: process.env.NEXT_PUBLIC_GEO_PILOT_PROJECT_ID!,
+    secretKey: process.env.NEXT_PUBLIC_GEO_PILOT_SECRET_KEY!
+  };
+
   return (
-    <ul>
-      {posts.map(p => <li key={p.id}>{p.title}</li>)}
-    </ul>
+    <GEOPilotProvider config={config}>
+      <div className="min-h-screen">
+        <header>
+          <h1>My Blog</h1>
+        </header>
+        
+        <main>
+          <BlogFullScreen />
+        </main>
+        
+        <footer>
+          <p>&copy; 2024 My Blog. All rights reserved.</p>
+        </footer>
+      </div>
+    </GEOPilotProvider>
   );
 }
 ```
 
-## Server usage
+## Features
 
-```tsx
-import { GEOPilotAPI } from '@geo-pilot/sdk';
-
-const api = new GEOPilotAPI({
-  apiUrl: process.env.GEO_PILOT_API_URL!,
-  projectId: process.env.GEO_PILOT_PROJECT_ID!
-});
-
-const { posts } = await api.getBlogPosts({ limit: 10 });
-```
-
-## Notes
-
-- The SDK is backend-driven. Prefer configuring styles and behavior in the dashboard.
-- Keep Next.js images configured for your asset domains if needed.
-- Advanced geospatial features require proper API configuration.
-
-## More docs
-
-- Blog post data structure: `sdk/docs/BLOG_POST_STRUCTURE.md`
-- Examples: `sdk/examples/simple-usage.tsx`
+- **Backend-driven configuration**: All styling and settings controlled from your dashboard
+- **SEO optimized**: Automatic meta tags, structured data, and Open Graph
+- **Performance optimized**: Lazy loading, caching, and image optimization
+- **Responsive design**: Works perfectly on all devices
+- **Accessibility**: WCAG 2.1 AA compliant
+- **TypeScript support**: Full type definitions included
 
 ## Support
 
-- Website: https://geopilot.buildagon.com
-- GitHub: https://github.com/mark-maher-moris/geo_pilot_sdk
-- Issues: https://github.com/mark-maher-moris/geo_pilot_sdk/issues
+- **GitHub**: [https://github.com/mark-maher-moris/geo_pilot_sdk](https://github.com/mark-maher-moris/geo_pilot_sdk)
+- **Issues**: [https://github.com/mark-maher-moris/geo_pilot_sdk/issues](https://github.com/mark-maher-moris/geo_pilot_sdk/issues)
 
-MIT © GEO Pilot
+## License
+
+MIT © Geo Pilot
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: Oct 2025
