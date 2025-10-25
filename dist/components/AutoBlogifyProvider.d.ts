@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { GEOPilotConfig } from '../types';
 export interface GEOPilotProviderProps {
     config: GEOPilotConfig;

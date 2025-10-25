@@ -1,6 +1,5 @@
-import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
-import * as React from 'react';
-import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 
 function bind(fn, thisArg) {
   return function wrap() {
@@ -4126,12 +4125,8 @@ class GEOPilotAPI {
     }
 }
 
-const GEOPilotContext = createContext({
-    api: null,
-    apiReady: false,
-    config: null,
-    updateConfig: () => { }
-});
+// Create context with proper default values for React 18
+const GEOPilotContext = createContext(null);
 function useGEOPilot() {
     const context = useContext(GEOPilotContext);
     if (!context) {
@@ -4481,21 +4476,28 @@ function applyBodyFontStyles(design, baseStyles = {}) {
 }
 
 function GEOPilotProvider({ config, children }) {
+    const [isClient, setIsClient] = useState(false);
     const [api, setApi] = useState(null);
     const [apiReady, setApiReady] = useState(false);
     const [currentConfig, setCurrentConfig] = useState(config);
     const [design, setDesign] = useState(null);
     const [designLoading, setDesignLoading] = useState(true);
     const [designError, setDesignError] = useState(null);
-    // Initialize API first
+    // SSR safety check
     useEffect(() => {
+        setIsClient(true);
+    }, []);
+    // Initialize API first (only on client side)
+    useEffect(() => {
+        if (!isClient)
+            return;
         const apiInstance = new GEOPilotAPI(currentConfig);
         setApi(apiInstance);
         setApiReady(true);
-    }, [currentConfig]);
-    // Fetch design configuration after API is initialized
+    }, [currentConfig, isClient]);
+    // Fetch design configuration after API is initialized (only on client side)
     useEffect(() => {
-        if (!api || !currentConfig.projectId)
+        if (!isClient || !api || !currentConfig.projectId)
             return;
         const fetchDesign = async () => {
             var _a;
@@ -4737,9 +4739,9 @@ function GEOPilotProvider({ config, children }) {
             }
         };
         fetchDesign();
-    }, [api, currentConfig.projectId]);
+    }, [api, currentConfig.projectId, isClient]);
     // Merge static config with dynamic design
-    const mergedConfig = React.useMemo(() => {
+    const mergedConfig = useMemo(() => {
         return mergeThemeConfig(currentConfig, design);
     }, [currentConfig, design]);
     const updateConfig = useCallback((newConfig) => {
@@ -4761,6 +4763,10 @@ function GEOPilotProvider({ config, children }) {
         designLoading,
         designError
     };
+    // Return children during SSR to avoid hydration mismatches
+    if (!isClient) {
+        return jsx(Fragment, { children: children });
+    }
     return (jsx(GEOPilotContext.Provider, { value: contextValue, children: children }));
 }
 
@@ -5137,7 +5143,7 @@ function useBlogPost(options = {}) {
     const viewTrackedRef = useRef(false);
     const fetchPost = useCallback(async (forceRefresh = false) => {
         if (!api || (!postId && !slug)) {
-            setError(!api ? 'Auto Blogify API not initialized' : 'Post ID or slug is required');
+            setError(!api ? 'GEO Pilot API not initialized' : 'Post ID or slug is required');
             return;
         }
         // Cancel previous request
@@ -10099,7 +10105,7 @@ const BlogSidebar = React.memo(function BlogSidebar({ config, metadata, posts, s
 });
 
 const BlogFooter = React.memo(function BlogFooter({ metadata, showPoweredBy = true }) {
-    return (jsx("footer", { className: "bg-gray-50 border-t w-full mt-auto", children: jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8", children: jsxs("div", { className: "text-center text-gray-600", children: [showPoweredBy && jsx("p", { children: "Powered by Auto Blogify" }), metadata && (jsxs("p", { className: "text-sm mt-2", children: ["Last updated ", new Date().toLocaleDateString()] }))] }) }) }));
+    return (jsx("footer", { className: "bg-gray-50 border-t w-full mt-auto", children: jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8", children: jsxs("div", { className: "text-center text-gray-600", children: [showPoweredBy && jsx("p", { children: "Powered by GEO Pilot" }), metadata && (jsxs("p", { className: "text-sm mt-2", children: ["Last updated ", new Date().toLocaleDateString()] }))] }) }) }));
 });
 
 // Custom Hooks
@@ -10170,6 +10176,11 @@ function createContainerStyles(design, style) {
 function BlogFullScreen(props) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
     const { config, page = 1, limit = 12, searchQuery = '', onPostClick, className = '', style } = props;
+    const [isClient, setIsClient] = useState(false);
+    // SSR safety check
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
     // Hooks
     const { design } = useGEOPilot();
     const blogState = useBlogState({ page, searchQuery });
@@ -10220,6 +10231,10 @@ function BlogFullScreen(props) {
             blogState.handlePostClick(post);
         }
     }, [onPostClick, blogState]);
+    // Return loading state during SSR
+    if (!isClient) {
+        return jsx(LoadingState, {});
+    }
     // Early returns for loading and error states
     if (loading && !posts.length) {
         return jsx(LoadingState, {});

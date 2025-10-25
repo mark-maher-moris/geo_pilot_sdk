@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { GEOPilotAPI } from '../services/api';
 import { GEOPilotContext } from '../hooks/useGEOPilot';
 import { GEOPilotConfig, BlogDesignConfig } from '../types';
@@ -11,6 +10,7 @@ export interface GEOPilotProviderProps {
 }
 
 export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
+  const [isClient, setIsClient] = useState(false);
   const [api, setApi] = useState<GEOPilotAPI | null>(null);
   const [apiReady, setApiReady] = useState(false);
   const [currentConfig, setCurrentConfig] = useState<GEOPilotConfig>(config);
@@ -18,16 +18,23 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
   const [designLoading, setDesignLoading] = useState(true);
   const [designError, setDesignError] = useState<string | null>(null);
 
-  // Initialize API first
+  // SSR safety check
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Initialize API first (only on client side)
+  useEffect(() => {
+    if (!isClient) return;
+    
     const apiInstance = new GEOPilotAPI(currentConfig);
     setApi(apiInstance);
     setApiReady(true);
-  }, [currentConfig]);
+  }, [currentConfig, isClient]);
 
-  // Fetch design configuration after API is initialized
+  // Fetch design configuration after API is initialized (only on client side)
   useEffect(() => {
-    if (!api || !currentConfig.projectId) return;
+    if (!isClient || !api || !currentConfig.projectId) return;
 
     const fetchDesign = async () => {
       try {
@@ -270,10 +277,10 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
     };
 
     fetchDesign();
-  }, [api, currentConfig.projectId]);
+  }, [api, currentConfig.projectId, isClient]);
 
   // Merge static config with dynamic design
-  const mergedConfig = React.useMemo(() => {
+  const mergedConfig = useMemo(() => {
     return mergeThemeConfig(currentConfig, design);
   }, [currentConfig, design]);
 
@@ -299,6 +306,11 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
     designLoading,
     designError
   };
+
+  // Return children during SSR to avoid hydration mismatches
+  if (!isClient) {
+    return <>{children}</>;
+  }
 
   return (
     <GEOPilotContext.Provider value={contextValue}>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useGEOPilot } from '../hooks/useGEOPilot';
 import { SearchFilters, GEOPilotConfig } from '../types';

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 export interface BlogSocialShareProps {
     url: string;
     title: string;

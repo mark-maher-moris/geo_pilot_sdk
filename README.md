@@ -5,6 +5,7 @@ Integrate advanced geospatial blog and content management capabilities into any 
 ## What you get
 
 - **Easy drop-in components** (Next.js friendly)
+- **React 18 compatible** with full SSR support
 - **Advanced geospatial features** and location-based content
 - **SEO-ready** (meta tags, JSON-LD, sitemaps)
 - **Fully backend-driven** styling and settings from your Geo Pilot dashboard
@@ -20,6 +21,12 @@ npm install @geo-pilot/sdk
 # or
 yarn add @geo-pilot/sdk
 ```
+
+### Requirements
+
+- **React**: 18.0.0 or higher
+- **Next.js**: 12.0.0 or higher (recommended 13+)
+- **Node.js**: 16.0.0 or higher
 
 ## Quick start
 
@@ -50,6 +57,8 @@ export default function Layout({ children }) {
   );
 }
 ```
+
+> **Note**: The SDK is fully compatible with React 18 and includes proper SSR support. No additional configuration needed!
 
 3) Render your blog
 
@@ -151,12 +160,33 @@ export default function BlogPage() {
 
 ## Features
 
+- **React 18 Compatible**: Full support for React 18 with proper SSR handling
 - **Backend-driven configuration**: All styling and settings controlled from your dashboard
 - **SEO optimized**: Automatic meta tags, structured data, and Open Graph
 - **Performance optimized**: Lazy loading, caching, and image optimization
 - **Responsive design**: Works perfectly on all devices
 - **Accessibility**: WCAG 2.1 AA compliant
 - **TypeScript support**: Full type definitions included
+- **SSR Safe**: No hydration mismatches or server-side rendering issues
+
+## Troubleshooting
+
+### React 18 Compatibility Issues
+
+If you encounter errors like `createContext is not a function` or hydration mismatches:
+
+1. **Ensure React 18+**: The SDK requires React 18.0.0 or higher
+2. **Check peer dependencies**: Run `npm ls react react-dom` to verify versions
+3. **Clear cache**: Delete `node_modules` and `package-lock.json`, then reinstall
+4. **SSR issues**: The SDK handles SSR automatically - no additional configuration needed
+
+### Common Issues
+
+**Error**: `useGEOPilot must be used within a GEOPilotProvider`
+**Solution**: Wrap your app with `GEOPilotProvider` as shown in the quick start guide.
+
+**Error**: Hydration mismatch warnings
+**Solution**: The SDK includes proper SSR handling. If you still see warnings, ensure you're using the latest version.
 
 ## Support
 
@@ -170,4 +200,5 @@ MIT © Geo Pilot
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: Oct 2025
+**Last Updated**: January 2025  
+**React Compatibility**: 18.0.0+

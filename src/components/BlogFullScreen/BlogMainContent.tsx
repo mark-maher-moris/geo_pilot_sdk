@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BlogSearchSection } from './components/BlogSearchSection';
 import { BlogPostsGrid } from './components/BlogPostsGrid';
 import { BlogPaginationSection } from './components/BlogPaginationSection';

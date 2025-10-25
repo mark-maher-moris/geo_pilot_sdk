@@ -12,12 +12,8 @@ export interface GEOPilotContextValue {
   designError?: string | null;
 }
 
-export const GEOPilotContext = createContext<GEOPilotContextValue>({
-  api: null,
-  apiReady: false,
-  config: null,
-  updateConfig: () => {}
-});
+// Create context with proper default values for React 18
+export const GEOPilotContext = createContext<GEOPilotContextValue | null>(null);
 
 export function useGEOPilot(): GEOPilotContextValue {
   const context = useContext(GEOPilotContext);

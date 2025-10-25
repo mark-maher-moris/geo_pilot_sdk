@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BlogSearch } from '../../BlogSearch';
 import { BlogState } from '../types';
 import { GEOPilotConfig } from '../../../types';

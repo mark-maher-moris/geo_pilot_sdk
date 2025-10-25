@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { BlogFullScreenProps } from '../types';
 
 // Hooks
@@ -129,6 +128,13 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
     style
   } = props;
 
+  const [isClient, setIsClient] = useState(false);
+
+  // SSR safety check
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Hooks
   const { design } = useGEOPilot();
   const blogState = useBlogState({ page, searchQuery });
@@ -194,6 +200,11 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
       blogState.handlePostClick(post);
     }
   }, [onPostClick, blogState]);
+
+  // Return loading state during SSR
+  if (!isClient) {
+    return <LoadingState />;
+  }
 
   // Early returns for loading and error states
   if (loading && !posts.length) {

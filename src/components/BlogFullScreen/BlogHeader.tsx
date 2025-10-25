@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { applyHeadingFontStyles, applyBodyFontStyles } from '../../utils/themeUtils';
 
 interface BlogHeaderProps {

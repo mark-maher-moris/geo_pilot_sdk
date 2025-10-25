@@ -38,4 +38,10 @@ export default {
     }),
   ],
   external: ['react', 'react-dom', 'next'],
+  onwarn(warning, warn) {
+    // Suppress certain warnings
+    if (warning.code === 'UNRESOLVED_IMPORT') return;
+    if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+    warn(warning);
+  },
 };

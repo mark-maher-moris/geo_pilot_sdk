@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useState, useMemo } from 'react';
 import { useGEOPilot } from '../hooks/useGEOPilot';
 import { applyDesignStyles, applyHeadingFontStyles, applyBodyFontStyles, getHeadingFontFamilyCSS, getBodyFontFamilyCSS } from '../utils/themeUtils';

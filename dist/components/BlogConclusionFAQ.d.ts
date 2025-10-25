@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 export interface FAQItem {
     id: string;
     question: string;

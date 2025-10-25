@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import { GEOPilotAPI } from '../services/api';
 import { GEOPilotContext } from '../hooks/useGEOPilot';

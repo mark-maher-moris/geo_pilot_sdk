@@ -1,5 +1,5 @@
 /**
- * GEO and localization utilities for the Auto Blogify SDK
+ * GEO and localization utilities for the GEO Pilot SDK
  */
 export interface GeoLocation {
     country?: string;

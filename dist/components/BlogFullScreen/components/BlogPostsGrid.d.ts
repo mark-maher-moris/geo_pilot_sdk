@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BlogPost, BlogLayout, ComponentSettings } from '../types';
 import { GEOPilotConfig } from '../../../types';
 interface BlogPostsGridProps {

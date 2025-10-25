@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BlogPagination } from '../../BlogPagination';
 import { BlogPagination as PaginationType, BlogState } from '../types';
 import { GEOPilotConfig } from '../../../types';

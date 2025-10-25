@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { BlogPost, GEOPilotConfig } from '../types';
 import { formatDate, formatReadingTime } from '../utils/formatters';
 import { useGEOPilot } from '../hooks/useGEOPilot';

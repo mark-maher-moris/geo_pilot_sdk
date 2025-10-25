@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useMemo } from 'react';
 import { useBlogPosts } from '../hooks/useBlogPosts';
 import { useSEO } from '../hooks/useSEO';

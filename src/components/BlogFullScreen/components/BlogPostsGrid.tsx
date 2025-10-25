@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BlogCard } from '../../BlogCard';
 import { LoadingSpinner } from '../../LoadingSpinner';
 import { BlogPost, BlogLayout, ComponentSettings } from '../types';

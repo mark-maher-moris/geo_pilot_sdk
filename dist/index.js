@@ -3,25 +3,6 @@
 var jsxRuntime = require('react/jsx-runtime');
 var React = require('react');
 
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    Object.keys(e).forEach(function (k) {
-      if (k !== 'default') {
-        var d = Object.getOwnPropertyDescriptor(e, k);
-        Object.defineProperty(n, k, d.get ? d : {
-          enumerable: true,
-          get: function () { return e[k]; }
-        });
-      }
-    });
-  }
-  n.default = e;
-  return Object.freeze(n);
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
-
 function bind(fn, thisArg) {
   return function wrap() {
     return fn.apply(thisArg, arguments);
@@ -4146,12 +4127,8 @@ class GEOPilotAPI {
     }
 }
 
-const GEOPilotContext = React.createContext({
-    api: null,
-    apiReady: false,
-    config: null,
-    updateConfig: () => { }
-});
+// Create context with proper default values for React 18
+const GEOPilotContext = React.createContext(null);
 function useGEOPilot() {
     const context = React.useContext(GEOPilotContext);
     if (!context) {
@@ -4501,21 +4478,28 @@ function applyBodyFontStyles(design, baseStyles = {}) {
 }
 
 function GEOPilotProvider({ config, children }) {
+    const [isClient, setIsClient] = React.useState(false);
     const [api, setApi] = React.useState(null);
     const [apiReady, setApiReady] = React.useState(false);
     const [currentConfig, setCurrentConfig] = React.useState(config);
     const [design, setDesign] = React.useState(null);
     const [designLoading, setDesignLoading] = React.useState(true);
     const [designError, setDesignError] = React.useState(null);
-    // Initialize API first
+    // SSR safety check
     React.useEffect(() => {
+        setIsClient(true);
+    }, []);
+    // Initialize API first (only on client side)
+    React.useEffect(() => {
+        if (!isClient)
+            return;
         const apiInstance = new GEOPilotAPI(currentConfig);
         setApi(apiInstance);
         setApiReady(true);
-    }, [currentConfig]);
-    // Fetch design configuration after API is initialized
+    }, [currentConfig, isClient]);
+    // Fetch design configuration after API is initialized (only on client side)
     React.useEffect(() => {
-        if (!api || !currentConfig.projectId)
+        if (!isClient || !api || !currentConfig.projectId)
             return;
         const fetchDesign = async () => {
             var _a;
@@ -4757,9 +4741,9 @@ function GEOPilotProvider({ config, children }) {
             }
         };
         fetchDesign();
-    }, [api, currentConfig.projectId]);
+    }, [api, currentConfig.projectId, isClient]);
     // Merge static config with dynamic design
-    const mergedConfig = React__namespace.useMemo(() => {
+    const mergedConfig = React.useMemo(() => {
         return mergeThemeConfig(currentConfig, design);
     }, [currentConfig, design]);
     const updateConfig = React.useCallback((newConfig) => {
@@ -4781,6 +4765,10 @@ function GEOPilotProvider({ config, children }) {
         designLoading,
         designError
     };
+    // Return children during SSR to avoid hydration mismatches
+    if (!isClient) {
+        return jsxRuntime.jsx(jsxRuntime.Fragment, { children: children });
+    }
     return (jsxRuntime.jsx(GEOPilotContext.Provider, { value: contextValue, children: children }));
 }
 
@@ -5157,7 +5145,7 @@ function useBlogPost(options = {}) {
     const viewTrackedRef = React.useRef(false);
     const fetchPost = React.useCallback(async (forceRefresh = false) => {
         if (!api || (!postId && !slug)) {
-            setError(!api ? 'Auto Blogify API not initialized' : 'Post ID or slug is required');
+            setError(!api ? 'GEO Pilot API not initialized' : 'Post ID or slug is required');
             return;
         }
         // Cancel previous request
@@ -9494,7 +9482,7 @@ function SEOHead({ post, config, title, description, image, url, type = post ? '
     // Canonical URL
     const canonicalUrl = seoConfig.canonicalUrl || finalUrl;
     // Performance optimizations - only run in browser
-    React__namespace.useEffect(() => {
+    React.useEffect(() => {
         if (typeof window !== 'undefined' && enablePerformanceOptimizations) {
             // Preload critical images
             if (finalImage) {
@@ -9520,7 +9508,7 @@ function SEOHead({ post, config, title, description, image, url, type = post ? '
         }
     }, [enablePerformanceOptimizations, finalImage, config.customDomain]);
     // Set meta tags in browser environment only
-    React__namespace.useEffect(() => {
+    React.useEffect(() => {
         if (typeof window !== 'undefined') {
             document.title = finalTitle;
             // Set meta description
@@ -9560,7 +9548,7 @@ function SEOHead({ post, config, title, description, image, url, type = post ? '
         }
     }, [finalTitle, finalDescription, keywords, canonicalUrl]);
     // Return only structured data - no DOM manipulation during build
-    return (jsxRuntime.jsxs(React__namespace.Fragment, { children: [enableAdvancedSEO && structuredData && structuredData.map((data, index) => (jsxRuntime.jsx("script", { type: "application/ld+json", dangerouslySetInnerHTML: {
+    return (jsxRuntime.jsxs(React.Fragment, { children: [enableAdvancedSEO && structuredData && structuredData.map((data, index) => (jsxRuntime.jsx("script", { type: "application/ld+json", dangerouslySetInnerHTML: {
                     __html: JSON.stringify(data)
                 } }, index))), enableAdvancedSEO && !structuredData && post && (jsxRuntime.jsx("script", { type: "application/ld+json", dangerouslySetInnerHTML: {
                     __html: JSON.stringify({
@@ -9867,7 +9855,7 @@ function BlogPost({ config, postId, slug, onBack, showRelatedPosts = true, enabl
                 } }))] }));
 }
 
-const BlogHeader = React__namespace.memo(function BlogHeader({ config, design, metadata }) {
+const BlogHeader = React.memo(function BlogHeader({ config, design, metadata }) {
     var _a, _b, _c;
     // Try to get project name from multiple sources
     const projectName = (metadata === null || metadata === void 0 ? void 0 : metadata.projectName) || (config === null || config === void 0 ? void 0 : config.projectName) || (config === null || config === void 0 ? void 0 : config.title) || 'Blog';
@@ -9894,7 +9882,7 @@ function BlogSearch({ config, onSearch, placeholder = 'Search blog posts...', sh
     return (jsxRuntime.jsxs("div", { className: `auto-blogify-blog-search ${className}`, children: [jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "relative", children: [jsxRuntime.jsxs("div", { className: "relative", children: [jsxRuntime.jsx("input", { type: "text", value: query, onChange: handleInputChange, placeholder: placeholder, className: "w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" }), jsxRuntime.jsx("div", { className: "absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none", children: jsxRuntime.jsx("svg", { className: "h-5 w-5 text-gray-400", fill: "currentColor", viewBox: "0 0 20 20", children: jsxRuntime.jsx("path", { fillRule: "evenodd", d: "M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z", clipRule: "evenodd" }) }) }), query && (jsxRuntime.jsx("button", { type: "button", onClick: () => setQuery(''), className: "absolute inset-y-0 right-0 pr-3 flex items-center", children: jsxRuntime.jsx("svg", { className: "h-5 w-5 text-gray-400 hover:text-gray-600", fill: "currentColor", viewBox: "0 0 20 20", children: jsxRuntime.jsx("path", { fillRule: "evenodd", d: "M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z", clipRule: "evenodd" }) }) }))] }), showAdvancedFilters && (jsxRuntime.jsxs("button", { type: "button", onClick: () => setShowFilters(!showFilters), className: "mt-2 text-sm text-gray-600 hover:text-gray-800", children: ["Advanced Filters ", showFilters ? '▲' : '▼'] }))] }), showAdvancedFilters && showFilters && (jsxRuntime.jsx("div", { className: "mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50", children: jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx("label", { className: "block text-sm font-medium text-gray-700 mb-1", children: "Category" }), jsxRuntime.jsx("select", { className: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", children: jsxRuntime.jsx("option", { value: "", children: "All Categories" }) })] }), jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx("label", { className: "block text-sm font-medium text-gray-700 mb-1", children: "Date Range" }), jsxRuntime.jsxs("select", { className: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", children: [jsxRuntime.jsx("option", { value: "", children: "All Time" }), jsxRuntime.jsx("option", { value: "last-week", children: "Last Week" }), jsxRuntime.jsx("option", { value: "last-month", children: "Last Month" }), jsxRuntime.jsx("option", { value: "last-year", children: "Last Year" })] })] }), jsxRuntime.jsxs("div", { children: [jsxRuntime.jsx("label", { className: "block text-sm font-medium text-gray-700 mb-1", children: "Sort By" }), jsxRuntime.jsxs("select", { className: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500", children: [jsxRuntime.jsx("option", { value: "publishedAt", children: "Date Published" }), jsxRuntime.jsx("option", { value: "title", children: "Title" }), jsxRuntime.jsx("option", { value: "readingTime", children: "Reading Time" })] })] })] }) }))] }));
 }
 
-const BlogSearchSection = React__namespace.memo(function BlogSearchSection({ config, blogState, showSearch, showFilters }) {
+const BlogSearchSection = React.memo(function BlogSearchSection({ config, blogState, showSearch, showFilters }) {
     if (!showSearch) {
         return null;
     }
@@ -9998,7 +9986,7 @@ const getEmptyStateMessage = (hasSearch, hasCategory, hasTag) => {
     return 'No blog posts have been published yet';
 };
 
-const BlogPostsGrid = React__namespace.memo(function BlogPostsGrid({ posts, loading, layout, config, componentSettings, blogState, onPostClick }) {
+const BlogPostsGrid = React.memo(function BlogPostsGrid({ posts, loading, layout, config, componentSettings, blogState, onPostClick }) {
     if (loading) {
         return (jsxRuntime.jsx("div", { className: "flex justify-center items-center py-12", children: jsxRuntime.jsx(LoadingSpinner, {}) }));
     }
@@ -10046,16 +10034,16 @@ function BlogPagination({ pagination, config, onPageChange, showFirstLast = true
                         } : undefined, "aria-label": `Go to page ${pageNum}`, "aria-current": pageNum === currentPage ? 'page' : undefined, children: pageNum }, pageNum))), showPrevNext && (jsxRuntime.jsx("button", { onClick: () => onPageChange(currentPage + 1), disabled: currentPage === totalPages, className: `${buttonBaseClasses} ${currentPage === totalPages ? disabledClasses : inactiveClasses} ${!showFirstLast || pageNumbers[pageNumbers.length - 1] === totalPages ? 'rounded-r-md' : ''}`, "aria-label": "Go to next page", children: jsxRuntime.jsx("svg", { className: "w-4 h-4", fill: "currentColor", viewBox: "0 0 20 20", children: jsxRuntime.jsx("path", { fillRule: "evenodd", d: "M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z", clipRule: "evenodd" }) }) })), showFirstLast && currentPage < totalPages && pageNumbers[pageNumbers.length - 1] < totalPages && (jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (jsxRuntime.jsx("span", { className: "px-2 py-2 text-gray-500", children: "..." })), jsxRuntime.jsx("button", { onClick: () => onPageChange(totalPages), className: `${buttonBaseClasses} ${inactiveClasses} rounded-r-md`, "aria-label": "Go to last page", children: totalPages })] }))] }), jsxRuntime.jsx("div", { className: "ml-4 flex items-center text-sm text-gray-700", children: jsxRuntime.jsxs("span", { children: ["Page ", currentPage, " of ", totalPages] }) })] }));
 }
 
-const BlogPaginationSection = React__namespace.memo(function BlogPaginationSection({ pagination, config, blogState, showPagination }) {
+const BlogPaginationSection = React.memo(function BlogPaginationSection({ pagination, config, blogState, showPagination }) {
     if (!showPagination || pagination.pages <= 1) {
         return null;
     }
     return (jsxRuntime.jsx("div", { className: "mt-12", children: jsxRuntime.jsx(BlogPagination, { config: config, pagination: pagination, onPageChange: blogState.handlePageChange }) }));
 });
 
-const BlogMainContent = React__namespace.memo(function BlogMainContent({ config, design, posts, loading, pagination, layout, showSearch, showFilters, showPagination, componentSettings, blogState, onPostClick }) {
+const BlogMainContent = React.memo(function BlogMainContent({ config, design, posts, loading, pagination, layout, showSearch, showFilters, showPagination, componentSettings, blogState, onPostClick }) {
     // Convert string layout to BlogLayout object if needed
-    const blogLayout = React__namespace.useMemo(() => {
+    const blogLayout = React.useMemo(() => {
         if (typeof layout === 'string') {
             return createDefaultLayout(layout);
         }
@@ -10109,7 +10097,7 @@ function BlogTags({ config, onTagClick, showPostCount = false, maxTags = 20, sty
     return (jsxRuntime.jsx("div", { className: `blog-tags ${style} ${className}`, children: style === 'list' ? (jsxRuntime.jsx("ul", { className: "tags-list space-y-2", children: tags.map((tag) => (jsxRuntime.jsx("li", { className: "tag-item", children: jsxRuntime.jsxs("button", { onClick: () => onTagClick === null || onTagClick === void 0 ? void 0 : onTagClick(tag), className: "tag-link w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex justify-between items-center", children: [jsxRuntime.jsxs("span", { className: "font-medium text-gray-700", children: ["#", tag] }), showPostCount && (jsxRuntime.jsx("span", { className: "post-count text-sm text-gray-500", children: "(0)" }))] }) }, tag))) })) : (jsxRuntime.jsx("div", { className: "tags-container flex flex-wrap gap-2", children: tags.map((tag, index) => (jsxRuntime.jsxs("button", { onClick: () => onTagClick === null || onTagClick === void 0 ? void 0 : onTagClick(tag), className: `tag-pill px-3 py-1 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-full transition-colors ${getTagStyle(tag, index)}`, children: ["#", tag, showPostCount && (jsxRuntime.jsx("span", { className: "post-count ml-1 text-xs", children: "(0)" }))] }, tag))) })) }));
 }
 
-const BlogSidebar = React__namespace.memo(function BlogSidebar({ config, metadata, posts, showCategories, showTags, blogState, onPostClick }) {
+const BlogSidebar = React.memo(function BlogSidebar({ config, metadata, posts, showCategories, showTags, blogState, onPostClick }) {
     const handleTagClick = (tag) => {
         var _a;
         // Filter posts by tag when a tag is clicked
@@ -10118,8 +10106,8 @@ const BlogSidebar = React__namespace.memo(function BlogSidebar({ config, metadat
     return (jsxRuntime.jsx("div", { className: "space-y-6", children: showTags && (jsxRuntime.jsxs("div", { className: "blog-sidebar-section", children: [jsxRuntime.jsx("h3", { className: "text-lg font-semibold mb-4 text-gray-900", children: "Tags" }), jsxRuntime.jsx(BlogTags, { config: config, onTagClick: handleTagClick, showPostCount: true, maxTags: 15, style: "pills", className: "blog-sidebar-tags" })] })) }));
 });
 
-const BlogFooter = React__namespace.memo(function BlogFooter({ metadata, showPoweredBy = true }) {
-    return (jsxRuntime.jsx("footer", { className: "bg-gray-50 border-t w-full mt-auto", children: jsxRuntime.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8", children: jsxRuntime.jsxs("div", { className: "text-center text-gray-600", children: [showPoweredBy && jsxRuntime.jsx("p", { children: "Powered by Auto Blogify" }), metadata && (jsxRuntime.jsxs("p", { className: "text-sm mt-2", children: ["Last updated ", new Date().toLocaleDateString()] }))] }) }) }));
+const BlogFooter = React.memo(function BlogFooter({ metadata, showPoweredBy = true }) {
+    return (jsxRuntime.jsx("footer", { className: "bg-gray-50 border-t w-full mt-auto", children: jsxRuntime.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8", children: jsxRuntime.jsxs("div", { className: "text-center text-gray-600", children: [showPoweredBy && jsxRuntime.jsx("p", { children: "Powered by GEO Pilot" }), metadata && (jsxRuntime.jsxs("p", { className: "text-sm mt-2", children: ["Last updated ", new Date().toLocaleDateString()] }))] }) }) }));
 });
 
 // Custom Hooks
@@ -10190,6 +10178,11 @@ function createContainerStyles(design, style) {
 function BlogFullScreen(props) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
     const { config, page = 1, limit = 12, searchQuery = '', onPostClick, className = '', style } = props;
+    const [isClient, setIsClient] = React.useState(false);
+    // SSR safety check
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
     // Hooks
     const { design } = useGEOPilot();
     const blogState = useBlogState({ page, searchQuery });
@@ -10240,6 +10233,10 @@ function BlogFullScreen(props) {
             blogState.handlePostClick(post);
         }
     }, [onPostClick, blogState]);
+    // Return loading state during SSR
+    if (!isClient) {
+        return jsxRuntime.jsx(LoadingState, {});
+    }
     // Early returns for loading and error states
     if (loading && !posts.length) {
         return jsxRuntime.jsx(LoadingState, {});
