@@ -171,14 +171,18 @@ export default function BlogPage() {
 
 ## Troubleshooting
 
-### React 18 Compatibility Issues
+### Quick Fix for `createContext is not a function` Error
 
-If you encounter errors like `createContext is not a function` or hydration mismatches:
+If you're getting this error, you're likely using an outdated SDK version:
 
-1. **Ensure React 18+**: The SDK requires React 18.0.0 or higher
-2. **Check peer dependencies**: Run `npm ls react react-dom` to verify versions
-3. **Clear cache**: Delete `node_modules` and `package-lock.json`, then reinstall
-4. **SSR issues**: The SDK handles SSR automatically - no additional configuration needed
+```bash
+# Update to the latest version
+npm install @geo-pilot/sdk@latest
+
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
 
 ### Common Issues
 
@@ -187,6 +191,10 @@ If you encounter errors like `createContext is not a function` or hydration mism
 
 **Error**: Hydration mismatch warnings
 **Solution**: The SDK includes proper SSR handling. If you still see warnings, ensure you're using the latest version.
+
+### Detailed Troubleshooting
+
+For comprehensive troubleshooting steps, see our [Troubleshooting Guide](./TROUBLESHOOTING.md).
 
 ## Support
 
@@ -199,6 +207,6 @@ MIT © Geo Pilot
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Last Updated**: January 2025  
 **React Compatibility**: 18.0.0+
