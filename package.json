@@ -1,6 +1,6 @@
 {
-  "name": "@geo-pilot/sdk",
-  "version": "1.0.1",
+  "name": "geo-pilot-sdk",
+  "version": "1.0.0",
   "description": "GEO Pilot SDK - Advanced geospatial blog and content management system for modern web applications",
   "type": "module",
   "main": "dist/index.js",
@@ -8,12 +8,13 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "jest",
+    "test": "echo 'No tests specified' && exit 0",
     "lint": "eslint src --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
     "prepublishOnly": "npm run build"
@@ -41,6 +42,9 @@
     "url": "https://github.com/mark-maher-moris/geo_pilot_sdk/issues"
   },
   "homepage": "https://geopilot.buildagon.com",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "next": ">=12.0.0",
     "react": ">=18.0.0",

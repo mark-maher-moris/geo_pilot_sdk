@@ -1,0 +1,95 @@
+name: Release and Publish
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Build package
+      run: npm run build
+      
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+    - name: Bump version and create tag
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          npm version ${{ github.event.inputs.version_type }} --no-git-tag-version
+        else
+          npm version patch --no-git-tag-version
+        fi
+        echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        
+    - name: Commit version bump
+      run: |
+        git add package.json
+        git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}"
+        git push
+        
+    - name: Create tag
+      run: |
+        git tag "v${{ steps.version.outputs.VERSION }}"
+        git push origin "v${{ steps.version.outputs.VERSION }}"
+        
+    - name: Publish to NPM
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        release_name: Release v${{ steps.version.outputs.VERSION }}
+        body: |
+          ## What's Changed
+          
+          - React 18 compatibility improvements
+          - SSR safety enhancements
+          - Bug fixes and performance optimizations
+          
+          ## Installation
+          
+          ```bash
+          npm install geo-pilot-sdk@${{ steps.version.outputs.VERSION }}
+          ```
+        draft: false
+        prerelease: false

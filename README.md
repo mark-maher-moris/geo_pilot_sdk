@@ -17,9 +17,9 @@ Integrate advanced geospatial blog and content management capabilities into any 
 ## Install
 
 ```bash
-npm install @geo-pilot/sdk
+npm install geo-pilot-sdk
 # or
-yarn add @geo-pilot/sdk
+yarn add geo-pilot-sdk
 ```
 
 ### Requirements
@@ -41,7 +41,7 @@ NEXT_PUBLIC_GEO_PILOT_SECRET_KEY=your-secret-key
 
 ```tsx
 // app/layout.tsx or pages/_app.tsx
-import { GEOPilotProvider, defaultConfig } from '@geo-pilot/sdk';
+import { GEOPilotProvider, defaultConfig } from 'geo-pilot-sdk';
 
 export default function Layout({ children }) {
   return (
@@ -64,7 +64,7 @@ export default function Layout({ children }) {
 
 ```tsx
 // app/blog/page.tsx
-import { BlogFullScreen } from '@geo-pilot/sdk';
+import { BlogFullScreen } from 'geo-pilot-sdk';
 
 export default function BlogPage() {
   return (
@@ -80,7 +80,7 @@ That's it! All styling, layout, typography, and component visibility are control
 The main all-in-one blog component that provides a complete blogging experience:
 
 ```tsx
-import { BlogFullScreen } from '@geo-pilot/sdk';
+import { BlogFullScreen } from 'geo-pilot-sdk';
 
 <BlogFullScreen 
   // Optional props
@@ -129,7 +129,7 @@ const config = {
 ## Complete Example
 
 ```tsx
-import { GEOPilotProvider, BlogFullScreen, defaultConfig } from '@geo-pilot/sdk';
+import { GEOPilotProvider, BlogFullScreen, defaultConfig } from 'geo-pilot-sdk';
 
 export default function BlogPage() {
   const config = {
