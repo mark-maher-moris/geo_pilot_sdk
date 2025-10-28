@@ -12,6 +12,12 @@ import {
   GEOPilotError,
   AnalyticsEvent
 } from '../types';
+import {
+  generateMockBlogPostsResponse,
+  generateMockMetadataResponse,
+  generateMockCategoriesResponse,
+  generateMockTagsResponse
+} from '../utils/mockData';
 
 export class GEOPilotAPI {
   private client: AxiosInstance;
@@ -166,17 +172,28 @@ export class GEOPilotAPI {
       if (cached) return cached;
     }
 
-    const response = await this.client.get<ApiResponse<T>>(endpoint, { params });
-    
-    if (!response.data.success) {
-      throw new GEOPilotError(
-        response.data.error?.message || 'Request failed',
-        response.data.error?.code
-      );
-    }
+    try {
+      const response = await this.client.get<ApiResponse<T>>(endpoint, { params });
 
-    this.setCache(cacheKey, response.data.data, ttl);
-    return response.data.data;
+      if (!response.data.success) {
+        throw new GEOPilotError(
+          response.data.error?.message || 'Request failed',
+          response.data.error?.code
+        );
+      }
+
+      this.setCache(cacheKey, response.data.data, ttl);
+      return response.data.data;
+    } catch (error) {
+      // For demo credentials only, use mock data as fallback
+      if (this.shouldUseMockData(endpoint)) {
+        console.warn(`API request failed for ${endpoint}, using mock data:`, error);
+        return this.getMockData<T>(endpoint, params);
+      }
+
+      // For real API credentials, throw the error so the UI can handle it
+      throw error;
+    }
   }
 
   /**
@@ -516,6 +533,66 @@ export class GEOPilotAPI {
    */
   getBaseUrl(): string {
     return this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
+  }
+
+  /**
+   * Check if we should use mock data for this endpoint (demo mode)
+   */
+  private shouldUseMockData(endpoint: string): boolean {
+    // Only use mock data for demo credentials, not for real API credentials
+    const isDemoCredentials = this.config.projectId === 'demo-project';
+
+    // Use mock data only for demo credentials, not for real API
+    return isDemoCredentials;
+  }
+
+  /**
+   * Check if this is a critical endpoint that should always work (even with mock data)
+   */
+  private isCriticalEndpoint(endpoint: string): boolean {
+    // Always provide mock data for these critical endpoints to ensure the UI works
+    return endpoint.includes('/posts') ||
+           endpoint.includes('/metadata') ||
+           endpoint.includes('/categories') ||
+           endpoint.includes('/tags') ||
+           endpoint.includes('/search') ||
+           endpoint.includes('/design');
+  }
+
+  /**
+   * Get mock data for the given endpoint
+   */
+  private getMockData<T>(endpoint: string, params?: any): T {
+    // Extract parameters
+    const page = params?.page || 1;
+    const limit = params?.limit || 10;
+    const category = params?.category;
+    const tag = params?.tag;
+    const search = params?.search;
+
+    // Return mock data based on endpoint
+    if (endpoint.includes('/posts')) {
+      return generateMockBlogPostsResponse(page, limit, search, category, tag) as T;
+    }
+
+    if (endpoint.includes('/metadata')) {
+      return generateMockMetadataResponse() as T;
+    }
+
+    if (endpoint.includes('/categories')) {
+      return generateMockCategoriesResponse() as T;
+    }
+
+    if (endpoint.includes('/tags')) {
+      return generateMockTagsResponse() as T;
+    }
+
+    if (endpoint.includes('/search')) {
+      return generateMockBlogPostsResponse(page, limit, search, category, tag) as T;
+    }
+
+    // Default fallback
+    return generateMockBlogPostsResponse(page, limit) as T;
   }
 }
 

@@ -37,6 +37,34 @@ NEXT_PUBLIC_GEO_PILOT_PROJECT_ID=your-project-id
 NEXT_PUBLIC_GEO_PILOT_SECRET_KEY=your-secret-key
 ```
 
+## Testing with Real API
+
+For testing with real API endpoints, use these credentials:
+
+```env
+NEXT_PUBLIC_GEO_PILOT_PROJECT_ID=LSZgnu18FMTahov29GNUbipw3AHOVcjq
+NEXT_PUBLIC_GEO_PILOT_SECRET_KEY=MAzzczyx9dRRRarhE7fy
+```
+
+### Setup for Testing:
+
+1. **Create `.env.local`** in your test project:
+   ```bash
+   echo "NEXT_PUBLIC_GEO_PILOT_PROJECT_ID=LSZgnu18FMTahov29GNUbipw3AHOVcjq" > .env.local
+   echo "NEXT_PUBLIC_GEO_PILOT_SECRET_KEY=MAzzczyx9dRRRarhE7fy" >> .env.local
+   ```
+
+2. **Install and build the SDK**:
+   ```bash
+   cd sdk && npm run build
+   cd ../examples/landing-test && npm install
+   ```
+
+3. **Test the integration**:
+   ```bash
+   npm run dev
+   ```
+
 2) Wrap your app
 
 ```tsx
@@ -150,12 +178,119 @@ export default function BlogPage() {
         </main>
         
         <footer>
-          <p>&copy; 2024 My Blog. All rights reserved.</p>
+          <p>&copy; 2025 My Blog. All rights reserved.</p>
         </footer>
       </div>
     </GEOPilotProvider>
   );
 }
+```
+
+## 🚀 Next.js Example Website
+
+We've included a complete Next.js example website that demonstrates all SDK features:
+
+### Quick Start with Example
+
+**Option 1: Using npm scripts (recommended)**
+```bash
+# Setup and run the example
+npm run example
+```
+
+**Option 2: Manual setup**
+1. **Navigate to the example directory:**
+   ```bash
+   cd examples/nextjs-blog
+   ```
+
+2. **Run the setup script:**
+   ```bash
+   ./setup.sh
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000) to see the example website.
+
+### Example Features
+
+The example includes:
+- **Complete Next.js setup** with TypeScript and Tailwind CSS
+- **Blog page** (`/blog`) with full SDK integration
+- **Responsive design** with custom orange branding
+- **SEO optimization** with meta tags and structured data
+- **Environment configuration** with your API credentials
+- **Performance optimization** with lazy loading and caching
+
+### Example Structure
+
+```
+examples/nextjs-blog/
+├── src/app/
+│   ├── layout.tsx          # Root layout with navigation
+│   ├── page.tsx            # Home page
+│   ├── blog/page.tsx       # Blog page with SDK integration
+│   └── about/page.tsx      # About page
+├── package.json            # Dependencies
+├── next.config.js          # Next.js configuration
+├── tailwind.config.js      # Tailwind CSS configuration
+├── setup.sh               # Automated setup script
+└── README.md              # Detailed documentation
+```
+
+### Environment Variables
+
+The example uses these environment variables:
+
+```env
+NEXT_PUBLIC_GEO_PILOT_SECRET_KEY=your_secret_key_here
+NEXT_PUBLIC_GEO_PILOT_PROJECT_ID=your_project_id_here
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Customization
+
+The example demonstrates:
+- **Theme customization** with orange brand colors
+- **Component configuration** with advanced options
+- **Performance settings** with caching and optimization
+- **SEO configuration** with meta tags and structured data
+
+### Available Scripts
+
+From the SDK root directory:
+
+```bash
+# Run the complete example (setup + dev server)
+npm run example
+
+# Setup the example only
+npm run example:setup
+
+# Build the SDK
+npm run build
+```
+
+From the example directory (`examples/nextjs-blog/`):
+
+```bash
+# Setup the example
+./setup.sh
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
 ```
 
 ## Features

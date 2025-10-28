@@ -141,6 +141,18 @@ export declare class GEOPilotAPI {
      * Get the resolved API base URL
      */
     getBaseUrl(): string;
+    /**
+     * Check if we should use mock data for this endpoint (demo mode)
+     */
+    private shouldUseMockData;
+    /**
+     * Check if this is a critical endpoint that should always work (even with mock data)
+     */
+    private isCriticalEndpoint;
+    /**
+     * Get mock data for the given endpoint
+     */
+    private getMockData;
 }
 export default GEOPilotAPI;
 //# sourceMappingURL=api.d.ts.map

@@ -8,7 +8,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "example": "./run-example.sh",
+    "example:setup": "cd examples/nextjs-blog && ./setup.sh"
   },
   "keywords": [
     "geo-pilot",

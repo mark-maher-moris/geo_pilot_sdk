@@ -6,6 +6,10 @@ import {
   UseBlogPostsResult,
   SearchFilters
 } from '../types';
+import {
+  generateMockBlogPostsResponse,
+  generateMockMetadataResponse
+} from '../utils/mockData';
 
 export interface UseBlogPostsOptions {
   page?: number;
@@ -118,8 +122,8 @@ export function useBlogPosts(options: UseBlogPostsOptions = {}): UseBlogPostsRes
       
     } catch (err: any) {
       if (err.name !== 'AbortError') {
+        console.error('API request failed:', err.message);
         setError(err.message || 'Failed to fetch blog posts');
-        console.error('Error fetching blog posts:', err);
       }
     } finally {
       setLoading(false);

@@ -113,7 +113,7 @@ function createContainerClasses(design: any, className: string): string {
 }
 
 function createContainerStyles(design: any, style?: React.CSSProperties): React.CSSProperties {
-  return applyDesignStyles(design, style) || {};
+  return applyDesignStyles(design, style);
 }
 
 // Main Component
@@ -136,7 +136,7 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
   }, []);
 
   // Hooks
-  const { design } = useGEOPilot();
+  const { design, designError, apiReady } = useGEOPilot();
   const blogState = useBlogState({ page, searchQuery });
 
   // Get configuration from design - everything comes from backend
@@ -159,12 +159,23 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
   const { metadata, loading: metadataLoading, error: metadataError } = useBlogMetadata();
   const { metaTags, structuredData } = useSEO(config, undefined, 'blog');
 
-  // All configuration comes from backend design
-  const componentSettings = useMemo(() => getComponentSettings(design, 'blogCard'), [design]);
-  const containerClasses = useMemo(() => createContainerClasses(design, className), [design, className]);
-  const containerStyles = useMemo(() => createContainerStyles(design, style), [design, style]);
-  
-  // Get all settings from backend design configuration
+  // All configuration comes from backend design - with safe fallbacks
+  const componentSettings = useMemo(() => {
+    if (!design) return getComponentSettings(null, 'blogCard');
+    return getComponentSettings(design, 'blogCard');
+  }, [design]);
+
+  const containerClasses = useMemo(() => {
+    if (!design) return createContainerClasses(null, className);
+    return createContainerClasses(design, className);
+  }, [design, className]);
+
+  const containerStyles = useMemo(() => {
+    if (!design) return createContainerStyles(null, style);
+    return createContainerStyles(design, style);
+  }, [design, style]);
+
+  // Get all settings from backend design configuration - with safe fallbacks
   const finalShowPagination = design?.blogSettings?.readingExperience?.showProgressBar ?? true;
   const finalShowSearch = true; // Always show search by default
   const finalShowFilters = false; // Filters disabled by default
@@ -211,8 +222,33 @@ export function BlogFullScreen(props: BlogFullScreenProps) {
     return <LoadingState />;
   }
 
+  // Show error state if we have any error and no posts
   if (error && !posts.length) {
+    console.log('BlogFullScreen: Showing error state for posts error:', error);
     return <ErrorState error={error} onRetry={refetch} className={className} style={style} />;
+  }
+
+  // Show error state if metadata loading failed
+  if (metadataError && !posts.length) {
+    console.log('BlogFullScreen: Showing error state for metadata error:', metadataError);
+    return <ErrorState error={`Metadata Error: ${metadataError}`} onRetry={refetch} className={className} style={style} />;
+  }
+
+  // Show error state if design loading failed completely and we have no posts
+  if (designError && !posts.length && !loading) {
+    console.log('BlogFullScreen: Showing error state for design error:', designError);
+    return <ErrorState error={`Design Error: ${designError}`} onRetry={() => window.location.reload()} className={className} style={style} />;
+  }
+
+  // Show error state if API is ready but we have no posts and no errors (shouldn't happen with real API)
+  if (apiReady && !posts.length && !loading && !error && !metadataError && !designError) {
+    console.log('BlogFullScreen: No posts found, showing empty state');
+    return <ErrorState error="No blog posts found. Please check your API configuration." onRetry={refetch} className={className} style={style} />;
+  }
+
+  // If we have posts but no design, still try to show the blog with defaults
+  if (posts.length && !design && !loading) {
+    // Component will use the safe fallbacks we added above
   }
 
   // Single post view

@@ -172,105 +172,108 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
           localStorage.setItem(`blog-design-${currentConfig.projectId}`, JSON.stringify(minimalDesign));
         }
       } catch (err) {
-        console.error('Error fetching blog design:', err);
+        console.error('API request failed:', err);
         setDesignError(err instanceof Error ? err.message : 'Failed to fetch design');
-        // Fallback to minimal design configuration
-        const minimalDesign = {
-          theme: {
-            id: 'minimal',
-            name: 'Minimal',
-            colorScheme: 'light',
-            customColors: {
-              primary: '#3B82F6',
-              secondary: '#6B7280',
-              accent: '#10B981',
-              background: '#FFFFFF',
-              surface: '#F9FAFB',
-              text: '#111827',
-              heading: '#111827',
-              textSecondary: '#6B7280',
-              border: '#E5E7EB',
-              success: '#10B981',
-              warning: '#F59E0B',
-              error: '#EF4444'
+
+        // Only use minimal design fallback for demo credentials
+        if (currentConfig.projectId === 'demo-project') {
+          const minimalDesign = {
+            theme: {
+              id: 'minimal',
+              name: 'Minimal',
+              colorScheme: 'light',
+              customColors: {
+                primary: '#3B82F6',
+                secondary: '#6B7280',
+                accent: '#10B981',
+                background: '#FFFFFF',
+                surface: '#F9FAFB',
+                text: '#111827',
+                heading: '#111827',
+                textSecondary: '#6B7280',
+                border: '#E5E7EB',
+                success: '#10B981',
+                warning: '#F59E0B',
+                error: '#EF4444'
+              }
+            },
+            layout: {
+              type: 'grid' as const,
+              columns: 1,
+              spacing: 'md',
+              maxWidth: '1200px',
+              showSidebar: false,
+              sidebarPosition: 'right' as const
+            },
+            typography: {
+              fontFamily: 'inter',
+              headingFont: 'inter',
+              bodyFont: 'inter'
+            },
+            components: {
+              blogCard: {
+                style: 'card',
+                showImage: true,
+                showAuthor: true,
+                showDate: true,
+                showExcerpt: true,
+                showReadingTime: true,
+                showCategories: true,
+                showTags: true
+              },
+              blogPost: {
+                showAuthor: true,
+                showDate: true,
+                showReadingTime: true,
+                showShareButtons: true,
+                showRelatedPosts: true
+              }
+            },
+            ctaButtons: [],
+            blogSettings: {
+              audioReader: {
+                enabled: false,
+                voice: 'auto' as const,
+                speed: 1.0,
+                autoPlay: false
+              },
+              sideSection: {
+                enabled: true,
+                showTableOfContents: true,
+                showRelatedPosts: true,
+                showSocialShare: true,
+                showAuthorBio: true,
+                showTags: true,
+                showCategories: true
+              },
+              readingExperience: {
+                showProgressBar: true,
+                enableDarkMode: true,
+                fontSize: 'medium' as const,
+                lineHeight: 'normal' as const,
+                maxWidth: 'medium' as const
+              },
+              seo: {
+                showMetaDescription: true,
+                showSchemaMarkup: true,
+                showOpenGraph: true,
+                showTwitterCards: true,
+                enableBreadcrumbs: true
+              },
+              social: {
+                showShareButtons: true,
+                showSocialProof: false,
+                showComments: false,
+                enableNewsletterSignup: false
+              },
+              branding: {
+                showPoweredBy: true
+              }
             }
-          },
-          layout: {
-            type: 'grid' as const,
-            columns: 1,
-            spacing: 'md',
-            maxWidth: '1200px',
-            showSidebar: false,
-            sidebarPosition: 'right' as const
-          },
-          typography: {
-            fontFamily: 'inter',
-            headingFont: 'inter',
-            bodyFont: 'inter'
-          },
-          components: {
-            blogCard: {
-              style: 'card',
-              showImage: true,
-              showAuthor: true,
-              showDate: true,
-              showExcerpt: true,
-              showReadingTime: true,
-              showCategories: true,
-              showTags: true
-            },
-            blogPost: {
-              showAuthor: true,
-              showDate: true,
-              showReadingTime: true,
-              showShareButtons: true,
-              showRelatedPosts: true
-            }
-          },
-          ctaButtons: [],
-          blogSettings: {
-            audioReader: {
-              enabled: false,
-              voice: 'auto' as const,
-              speed: 1.0,
-              autoPlay: false
-            },
-            sideSection: {
-              enabled: true,
-              showTableOfContents: true,
-              showRelatedPosts: true,
-              showSocialShare: true,
-              showAuthorBio: true,
-              showTags: true,
-              showCategories: true
-            },
-            readingExperience: {
-              showProgressBar: true,
-              enableDarkMode: true,
-              fontSize: 'medium' as const,
-              lineHeight: 'normal' as const,
-              maxWidth: 'medium' as const
-            },
-            seo: {
-              showMetaDescription: true,
-              showSchemaMarkup: true,
-              showOpenGraph: true,
-              showTwitterCards: true,
-              enableBreadcrumbs: true
-            },
-            social: {
-              showShareButtons: true,
-              showSocialProof: false,
-              showComments: false,
-              enableNewsletterSignup: false
-            },
-            branding: {
-              showPoweredBy: true
-            }
-          }
-        };
-        setDesign(minimalDesign);
-        localStorage.setItem(`blog-design-${currentConfig.projectId}`, JSON.stringify(minimalDesign));
+          };
+          setDesign(minimalDesign);
+          localStorage.setItem(`blog-design-${currentConfig.projectId}`, JSON.stringify(minimalDesign));
+        }
       } finally {
         setDesignLoading(false);
       }
@@ -307,13 +310,19 @@ export function GEOPilotProvider({ config, children }: GEOPilotProviderProps) {
     designError
   };
 
-  // Return children during SSR to avoid hydration mismatches
-  if (!isClient) {
-    return <>{children}</>;
-  }
+  // Always provide context, but with safe defaults during SSR
+  const safeContextValue = !isClient ? {
+    api: null,
+    apiReady: false,
+    config: currentConfig,
+    updateConfig: () => {},
+    design: null,
+    designLoading: true,
+    designError: null
+  } : contextValue;
 
   return (
-    <GEOPilotContext.Provider value={contextValue}>
+    <GEOPilotContext.Provider value={safeContextValue}>
       {children}
     </GEOPilotContext.Provider>
   );

@@ -21,7 +21,7 @@ export interface BlogCTAFooterProps {
 
 export function BlogCTAFooter({
   ctaButtons = [],
-  footerText = "© 2024 Your Website. All rights reserved.",
+  footerText = "© 2025 Your Website. All rights reserved.",
   showFooter = true,
   className = '',
   style

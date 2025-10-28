@@ -1,4 +1,4 @@
-import { jsx, Fragment, jsxs } from 'react/jsx-runtime';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 
 function bind(fn, thisArg) {
@@ -3782,6 +3782,208 @@ class GEOPilotError extends Error {
     }
 }
 
+// Mock blog posts for demo purposes
+const mockBlogPosts = [
+    {
+        id: '1',
+        title: 'Getting Started with React 19',
+        slug: 'getting-started-with-react-19',
+        content: 'React 19 brings exciting new features and improvements...',
+        excerpt: 'Learn about the latest features in React 19 and how to use them in your projects.',
+        featuredImage: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=400&fit=crop',
+        seoTitle: 'Getting Started with React 19 - Complete Guide',
+        seoDescription: 'Learn about the latest features in React 19 and how to use them in your projects.',
+        seoKeywords: ['react', 'javascript', 'frontend', 'development'],
+        categories: ['React', 'JavaScript', 'Frontend'],
+        tags: ['react19', 'javascript', 'frontend'],
+        publishedAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z',
+        readingTime: 5,
+        wordCount: 800,
+        authorName: 'John Doe',
+        author: 'john-doe',
+        status: 'published'
+    },
+    {
+        id: '2',
+        title: 'Building Modern Web Applications with Next.js',
+        slug: 'building-modern-web-applications-nextjs',
+        content: 'Next.js has revolutionized the way we build web applications...',
+        excerpt: 'Explore the power of Next.js for building scalable web applications.',
+        featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
+        seoTitle: 'Building Modern Web Applications with Next.js',
+        seoDescription: 'Explore the power of Next.js for building scalable web applications.',
+        seoKeywords: ['nextjs', 'react', 'web development', 'ssr'],
+        categories: ['Next.js', 'React', 'Web Development'],
+        tags: ['nextjs', 'react', 'ssr', 'web-development'],
+        publishedAt: '2024-01-14T15:30:00Z',
+        updatedAt: '2024-01-14T15:30:00Z',
+        readingTime: 8,
+        wordCount: 1200,
+        authorName: 'Jane Smith',
+        author: 'jane-smith',
+        status: 'published'
+    },
+    {
+        id: '3',
+        title: 'TypeScript Best Practices for Large Applications',
+        slug: 'typescript-best-practices-large-applications',
+        content: 'TypeScript provides excellent type safety and developer experience...',
+        excerpt: 'Learn essential TypeScript patterns and best practices for enterprise applications.',
+        featuredImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop',
+        seoTitle: 'TypeScript Best Practices for Large Applications',
+        seoDescription: 'Learn essential TypeScript patterns and best practices for enterprise applications.',
+        seoKeywords: ['typescript', 'javascript', 'enterprise', 'best-practices'],
+        categories: ['TypeScript', 'JavaScript', 'Best Practices'],
+        tags: ['typescript', 'javascript', 'enterprise', 'best-practices'],
+        publishedAt: '2024-01-13T09:15:00Z',
+        updatedAt: '2024-01-13T09:15:00Z',
+        readingTime: 12,
+        wordCount: 1800,
+        authorName: 'Mike Johnson',
+        author: 'mike-johnson',
+        status: 'published'
+    },
+    {
+        id: '4',
+        title: 'The Future of Web Development',
+        slug: 'future-of-web-development',
+        content: 'Web development is constantly evolving with new technologies...',
+        excerpt: 'Discover emerging trends and technologies shaping the future of web development.',
+        featuredImage: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop',
+        seoTitle: 'The Future of Web Development - Trends & Technologies',
+        seoDescription: 'Discover emerging trends and technologies shaping the future of web development.',
+        seoKeywords: ['web development', 'future', 'trends', 'technology'],
+        categories: ['Web Development', 'Technology', 'Future'],
+        tags: ['web-development', 'future', 'trends', 'technology'],
+        publishedAt: '2024-01-12T14:20:00Z',
+        updatedAt: '2024-01-12T14:20:00Z',
+        readingTime: 6,
+        wordCount: 900,
+        authorName: 'Sarah Wilson',
+        author: 'sarah-wilson',
+        status: 'published'
+    },
+    {
+        id: '5',
+        title: 'Mastering CSS Grid and Flexbox',
+        slug: 'mastering-css-grid-flexbox',
+        content: 'CSS Grid and Flexbox are powerful layout systems...',
+        excerpt: 'Master modern CSS layout techniques with Grid and Flexbox for responsive designs.',
+        featuredImage: 'https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=800&h=400&fit=crop',
+        seoTitle: 'Mastering CSS Grid and Flexbox - Layout Guide',
+        seoDescription: 'Master modern CSS layout techniques with Grid and Flexbox for responsive designs.',
+        seoKeywords: ['css', 'grid', 'flexbox', 'layout', 'responsive'],
+        categories: ['CSS', 'Frontend', 'Layout'],
+        tags: ['css', 'grid', 'flexbox', 'layout', 'responsive'],
+        publishedAt: '2024-01-11T11:45:00Z',
+        updatedAt: '2024-01-11T11:45:00Z',
+        readingTime: 10,
+        wordCount: 1500,
+        authorName: 'David Brown',
+        author: 'david-brown',
+        status: 'published'
+    },
+    {
+        id: '6',
+        title: 'Node.js Performance Optimization',
+        slug: 'nodejs-performance-optimization',
+        content: 'Optimizing Node.js applications for better performance...',
+        excerpt: 'Learn techniques to optimize your Node.js applications for better performance and scalability.',
+        featuredImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=400&fit=crop',
+        seoTitle: 'Node.js Performance Optimization - Best Practices',
+        seoDescription: 'Learn techniques to optimize your Node.js applications for better performance and scalability.',
+        seoKeywords: ['nodejs', 'performance', 'optimization', 'javascript'],
+        categories: ['Node.js', 'Performance', 'JavaScript'],
+        tags: ['nodejs', 'performance', 'optimization', 'javascript'],
+        publishedAt: '2024-01-10T16:30:00Z',
+        updatedAt: '2024-01-10T16:30:00Z',
+        readingTime: 15,
+        wordCount: 2200,
+        authorName: 'Emily Davis',
+        author: 'emily-davis',
+        status: 'published'
+    }
+];
+// Mock blog metadata
+const mockBlogMetadata = {
+    projectId: 'demo-project',
+    projectName: 'Demo Blog',
+    description: 'A modern blog showcasing the latest in web development, technology, and programming.',
+    seoTitle: 'Demo Blog - Web Development & Technology',
+    seoDescription: 'Stay updated with the latest web development trends, React tutorials, and technology insights.',
+    defaultAuthor: 'Demo Author',
+    language: 'en',
+    timezone: 'UTC',
+    postsPerPage: 12,
+    totalPosts: mockBlogPosts.length
+};
+// Mock categories
+const mockCategories = ['React', 'JavaScript', 'Next.js', 'TypeScript', 'CSS', 'Node.js', 'Web Development', 'Technology', 'Frontend', 'Performance'];
+// Mock tags
+const mockTags = ['react19', 'javascript', 'frontend', 'nextjs', 'typescript', 'css', 'nodejs', 'web-development', 'performance', 'optimization', 'ssr', 'responsive', 'best-practices', 'enterprise', 'future', 'trends', 'technology', 'layout', 'grid', 'flexbox'];
+// Generate mock pagination
+function generateMockPagination(page, limit, total) {
+    const pages = Math.ceil(total / limit);
+    return {
+        total,
+        page,
+        limit,
+        pages
+    };
+}
+// Generate mock blog posts response
+function generateMockBlogPostsResponse(page = 1, limit = 12, search, category, tag) {
+    let filteredPosts = [...mockBlogPosts];
+    // Filter by search query
+    if (search) {
+        const searchLower = search.toLowerCase();
+        filteredPosts = filteredPosts.filter(post => {
+            var _a, _b;
+            return post.title.toLowerCase().includes(searchLower) ||
+                ((_a = post.excerpt) === null || _a === void 0 ? void 0 : _a.toLowerCase().includes(searchLower)) ||
+                post.content.toLowerCase().includes(searchLower) ||
+                ((_b = post.tags) === null || _b === void 0 ? void 0 : _b.some(tag => tag.toLowerCase().includes(searchLower)));
+        });
+    }
+    // Filter by category
+    if (category) {
+        filteredPosts = filteredPosts.filter(post => { var _a; return (_a = post.categories) === null || _a === void 0 ? void 0 : _a.some(cat => cat.toLowerCase() === category.toLowerCase()); });
+    }
+    // Filter by tag
+    if (tag) {
+        filteredPosts = filteredPosts.filter(post => { var _a; return (_a = post.tags) === null || _a === void 0 ? void 0 : _a.some(t => t.toLowerCase() === tag.toLowerCase()); });
+    }
+    // Sort by published date (newest first)
+    filteredPosts.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    // Paginate
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+    return {
+        posts: paginatedPosts,
+        pagination: generateMockPagination(page, limit, filteredPosts.length)
+    };
+}
+// Generate mock metadata response
+function generateMockMetadataResponse() {
+    return {
+        metadata: mockBlogMetadata
+    };
+}
+// Generate mock categories response
+function generateMockCategoriesResponse() {
+    return {
+        categories: mockCategories
+    };
+}
+// Generate mock tags response
+function generateMockTagsResponse() {
+    return {
+        tags: mockTags
+    };
+}
+
 class GEOPilotAPI {
     constructor(config) {
         this.config = config;
@@ -3900,12 +4102,23 @@ class GEOPilotAPI {
             if (cached)
                 return cached;
         }
-        const response = await this.client.get(endpoint, { params });
-        if (!response.data.success) {
-            throw new GEOPilotError(((_a = response.data.error) === null || _a === void 0 ? void 0 : _a.message) || 'Request failed', (_b = response.data.error) === null || _b === void 0 ? void 0 : _b.code);
+        try {
+            const response = await this.client.get(endpoint, { params });
+            if (!response.data.success) {
+                throw new GEOPilotError(((_a = response.data.error) === null || _a === void 0 ? void 0 : _a.message) || 'Request failed', (_b = response.data.error) === null || _b === void 0 ? void 0 : _b.code);
+            }
+            this.setCache(cacheKey, response.data.data, ttl);
+            return response.data.data;
         }
-        this.setCache(cacheKey, response.data.data, ttl);
-        return response.data.data;
+        catch (error) {
+            // For demo credentials only, use mock data as fallback
+            if (this.shouldUseMockData(endpoint)) {
+                console.warn(`API request failed for ${endpoint}, using mock data:`, error);
+                return this.getMockData(endpoint, params);
+            }
+            // For real API credentials, throw the error so the UI can handle it
+            throw error;
+        }
     }
     /**
      * Get published blog posts for the project
@@ -4122,6 +4335,56 @@ class GEOPilotAPI {
      */
     getBaseUrl() {
         return this.client.defaults.baseURL || 'https://geopilotbackend.vercel.app/api';
+    }
+    /**
+     * Check if we should use mock data for this endpoint (demo mode)
+     */
+    shouldUseMockData(endpoint) {
+        // Only use mock data for demo credentials, not for real API credentials
+        const isDemoCredentials = this.config.projectId === 'demo-project';
+        // Use mock data only for demo credentials, not for real API
+        return isDemoCredentials;
+    }
+    /**
+     * Check if this is a critical endpoint that should always work (even with mock data)
+     */
+    isCriticalEndpoint(endpoint) {
+        // Always provide mock data for these critical endpoints to ensure the UI works
+        return endpoint.includes('/posts') ||
+            endpoint.includes('/metadata') ||
+            endpoint.includes('/categories') ||
+            endpoint.includes('/tags') ||
+            endpoint.includes('/search') ||
+            endpoint.includes('/design');
+    }
+    /**
+     * Get mock data for the given endpoint
+     */
+    getMockData(endpoint, params) {
+        // Extract parameters
+        const page = (params === null || params === void 0 ? void 0 : params.page) || 1;
+        const limit = (params === null || params === void 0 ? void 0 : params.limit) || 10;
+        const category = params === null || params === void 0 ? void 0 : params.category;
+        const tag = params === null || params === void 0 ? void 0 : params.tag;
+        const search = params === null || params === void 0 ? void 0 : params.search;
+        // Return mock data based on endpoint
+        if (endpoint.includes('/posts')) {
+            return generateMockBlogPostsResponse(page, limit, search, category, tag);
+        }
+        if (endpoint.includes('/metadata')) {
+            return generateMockMetadataResponse();
+        }
+        if (endpoint.includes('/categories')) {
+            return generateMockCategoriesResponse();
+        }
+        if (endpoint.includes('/tags')) {
+            return generateMockTagsResponse();
+        }
+        if (endpoint.includes('/search')) {
+            return generateMockBlogPostsResponse(page, limit, search, category, tag);
+        }
+        // Default fallback
+        return generateMockBlogPostsResponse(page, limit);
     }
 }
 
@@ -4634,105 +4897,107 @@ function GEOPilotProvider({ config, children }) {
                 }
             }
             catch (err) {
-                console.error('Error fetching blog design:', err);
+                console.error('API request failed:', err);
                 setDesignError(err instanceof Error ? err.message : 'Failed to fetch design');
-                // Fallback to minimal design configuration
-                const minimalDesign = {
-                    theme: {
-                        id: 'minimal',
-                        name: 'Minimal',
-                        colorScheme: 'light',
-                        customColors: {
-                            primary: '#3B82F6',
-                            secondary: '#6B7280',
-                            accent: '#10B981',
-                            background: '#FFFFFF',
-                            surface: '#F9FAFB',
-                            text: '#111827',
-                            heading: '#111827',
-                            textSecondary: '#6B7280',
-                            border: '#E5E7EB',
-                            success: '#10B981',
-                            warning: '#F59E0B',
-                            error: '#EF4444'
+                // Only use minimal design fallback for demo credentials
+                if (currentConfig.projectId === 'demo-project') {
+                    const minimalDesign = {
+                        theme: {
+                            id: 'minimal',
+                            name: 'Minimal',
+                            colorScheme: 'light',
+                            customColors: {
+                                primary: '#3B82F6',
+                                secondary: '#6B7280',
+                                accent: '#10B981',
+                                background: '#FFFFFF',
+                                surface: '#F9FAFB',
+                                text: '#111827',
+                                heading: '#111827',
+                                textSecondary: '#6B7280',
+                                border: '#E5E7EB',
+                                success: '#10B981',
+                                warning: '#F59E0B',
+                                error: '#EF4444'
+                            }
+                        },
+                        layout: {
+                            type: 'grid',
+                            columns: 1,
+                            spacing: 'md',
+                            maxWidth: '1200px',
+                            showSidebar: false,
+                            sidebarPosition: 'right'
+                        },
+                        typography: {
+                            fontFamily: 'inter',
+                            headingFont: 'inter',
+                            bodyFont: 'inter'
+                        },
+                        components: {
+                            blogCard: {
+                                style: 'card',
+                                showImage: true,
+                                showAuthor: true,
+                                showDate: true,
+                                showExcerpt: true,
+                                showReadingTime: true,
+                                showCategories: true,
+                                showTags: true
+                            },
+                            blogPost: {
+                                showAuthor: true,
+                                showDate: true,
+                                showReadingTime: true,
+                                showShareButtons: true,
+                                showRelatedPosts: true
+                            }
+                        },
+                        ctaButtons: [],
+                        blogSettings: {
+                            audioReader: {
+                                enabled: false,
+                                voice: 'auto',
+                                speed: 1.0,
+                                autoPlay: false
+                            },
+                            sideSection: {
+                                enabled: true,
+                                showTableOfContents: true,
+                                showRelatedPosts: true,
+                                showSocialShare: true,
+                                showAuthorBio: true,
+                                showTags: true,
+                                showCategories: true
+                            },
+                            readingExperience: {
+                                showProgressBar: true,
+                                enableDarkMode: true,
+                                fontSize: 'medium',
+                                lineHeight: 'normal',
+                                maxWidth: 'medium'
+                            },
+                            seo: {
+                                showMetaDescription: true,
+                                showSchemaMarkup: true,
+                                showOpenGraph: true,
+                                showTwitterCards: true,
+                                enableBreadcrumbs: true
+                            },
+                            social: {
+                                showShareButtons: true,
+                                showSocialProof: false,
+                                showComments: false,
+                                enableNewsletterSignup: false
+                            },
+                            branding: {
+                                showPoweredBy: true
+                            }
                         }
-                    },
-                    layout: {
-                        type: 'grid',
-                        columns: 1,
-                        spacing: 'md',
-                        maxWidth: '1200px',
-                        showSidebar: false,
-                        sidebarPosition: 'right'
-                    },
-                    typography: {
-                        fontFamily: 'inter',
-                        headingFont: 'inter',
-                        bodyFont: 'inter'
-                    },
-                    components: {
-                        blogCard: {
-                            style: 'card',
-                            showImage: true,
-                            showAuthor: true,
-                            showDate: true,
-                            showExcerpt: true,
-                            showReadingTime: true,
-                            showCategories: true,
-                            showTags: true
-                        },
-                        blogPost: {
-                            showAuthor: true,
-                            showDate: true,
-                            showReadingTime: true,
-                            showShareButtons: true,
-                            showRelatedPosts: true
-                        }
-                    },
-                    ctaButtons: [],
-                    blogSettings: {
-                        audioReader: {
-                            enabled: false,
-                            voice: 'auto',
-                            speed: 1.0,
-                            autoPlay: false
-                        },
-                        sideSection: {
-                            enabled: true,
-                            showTableOfContents: true,
-                            showRelatedPosts: true,
-                            showSocialShare: true,
-                            showAuthorBio: true,
-                            showTags: true,
-                            showCategories: true
-                        },
-                        readingExperience: {
-                            showProgressBar: true,
-                            enableDarkMode: true,
-                            fontSize: 'medium',
-                            lineHeight: 'normal',
-                            maxWidth: 'medium'
-                        },
-                        seo: {
-                            showMetaDescription: true,
-                            showSchemaMarkup: true,
-                            showOpenGraph: true,
-                            showTwitterCards: true,
-                            enableBreadcrumbs: true
-                        },
-                        social: {
-                            showShareButtons: true,
-                            showSocialProof: false,
-                            showComments: false,
-                            enableNewsletterSignup: false
-                        },
-                        branding: {
-                            showPoweredBy: true
-                        }
-                    }
-                };
-                setDesign(minimalDesign);
-                localStorage.setItem(`blog-design-${currentConfig.projectId}`, JSON.stringify(minimalDesign));
+                    };
+                    setDesign(minimalDesign);
+                    localStorage.setItem(`blog-design-${currentConfig.projectId}`, JSON.stringify(minimalDesign));
+                }
             }
             finally {
                 setDesignLoading(false);
@@ -4763,11 +5028,17 @@ function GEOPilotProvider({ config, children }) {
         designLoading,
         designError
     };
-    // Return children during SSR to avoid hydration mismatches
-    if (!isClient) {
-        return jsx(Fragment, { children: children });
-    }
-    return (jsx(GEOPilotContext.Provider, { value: contextValue, children: children }));
+    // Always provide context, but with safe defaults during SSR
+    const safeContextValue = !isClient ? {
+        api: null,
+        apiReady: false,
+        config: currentConfig,
+        updateConfig: () => { },
+        design: null,
+        designLoading: true,
+        designError: null
+    } : contextValue;
+    return (jsx(GEOPilotContext.Provider, { value: safeContextValue, children: children }));
 }
 
 function useBlogPosts(options = {}) {
@@ -4846,8 +5117,8 @@ function useBlogPosts(options = {}) {
         }
         catch (err) {
             if (err.name !== 'AbortError') {
+                console.error('API request failed:', err.message);
                 setError(err.message || 'Failed to fetch blog posts');
-                console.error('Error fetching blog posts:', err);
             }
         }
         finally {
@@ -4919,8 +5190,8 @@ function useBlogMetadata(options = {}) {
         }
         catch (err) {
             if (err.name !== 'AbortError') {
+                console.error('API request failed:', err.message);
                 setError(err.message || 'Failed to fetch blog metadata');
-                console.error('Error fetching blog metadata:', err);
             }
         }
         finally {
@@ -5011,15 +5282,25 @@ function useSEO(config, post, type = 'post') {
             }
         }
         catch (error) {
-            console.error('Error fetching SEO data:', error);
-            // Fallback to basic SEO data
-            const fallbackData = generateFallbackSEO(post, config, type);
-            setSeoData({
-                metaTags: fallbackData.metaTags,
-                structuredData: fallbackData.structuredData,
-                loading: false,
-                error: error instanceof Error ? error.message : 'Failed to fetch SEO data'
-            });
+            console.error('API request failed:', error);
+            // Only use fallback data for demo credentials
+            if (config.projectId === 'demo-project') {
+                const fallbackData = generateFallbackSEO(post, config, type);
+                setSeoData({
+                    metaTags: fallbackData.metaTags,
+                    structuredData: fallbackData.structuredData,
+                    loading: false,
+                    error: null
+                });
+            }
+            else {
+                setSeoData({
+                    metaTags: {},
+                    structuredData: [],
+                    loading: false,
+                    error: error instanceof Error ? error.message : 'Failed to fetch SEO data'
+                });
+            }
         }
     };
     return seoData;
@@ -9032,7 +9313,7 @@ function BlogConclusionFAQ({ conclusion, faqItems = [], title = "Answering Your 
                         }) })] }))] }));
 }
 
-function BlogCTAFooter({ ctaButtons = [], footerText = "© 2024 Your Website. All rights reserved.", showFooter = true, className = '', style }) {
+function BlogCTAFooter({ ctaButtons = [], footerText = "© 2025 Your Website. All rights reserved.", showFooter = true, className = '', style }) {
     var _a, _b;
     const { design } = useGEOPilot();
     const containerClasses = useMemo(() => {
@@ -10170,7 +10451,7 @@ function createContainerClasses(design, className) {
     return `${baseClasses} ${className}`.trim();
 }
 function createContainerStyles(design, style) {
-    return applyDesignStyles(design, style) || {};
+    return applyDesignStyles(design, style);
 }
 // Main Component
 function BlogFullScreen(props) {
@@ -10182,7 +10463,7 @@ function BlogFullScreen(props) {
         setIsClient(true);
     }, []);
     // Hooks
-    const { design } = useGEOPilot();
+    const { design, designError, apiReady } = useGEOPilot();
     const blogState = useBlogState({ page, searchQuery });
     const finalLimit = limit;
     const { posts, pagination, loading, error, refetch } = useBlogPosts({
@@ -10193,11 +10474,23 @@ function BlogFullScreen(props) {
     });
     const { metadata, loading: metadataLoading, error: metadataError } = useBlogMetadata();
     const { metaTags, structuredData } = useSEO(config, undefined, 'blog');
-    // All configuration comes from backend design
-    const componentSettings = useMemo(() => getComponentSettings(design, 'blogCard'), [design]);
-    const containerClasses = useMemo(() => createContainerClasses(design, className), [design, className]);
-    const containerStyles = useMemo(() => createContainerStyles(design, style), [design, style]);
-    // Get all settings from backend design configuration
+    // All configuration comes from backend design - with safe fallbacks
+    const componentSettings = useMemo(() => {
+        if (!design)
+            return getComponentSettings(null, 'blogCard');
+        return getComponentSettings(design, 'blogCard');
+    }, [design]);
+    const containerClasses = useMemo(() => {
+        if (!design)
+            return createContainerClasses(null, className);
+        return createContainerClasses(design, className);
+    }, [design, className]);
+    const containerStyles = useMemo(() => {
+        if (!design)
+            return createContainerStyles(null, style);
+        return createContainerStyles(design, style);
+    }, [design, style]);
+    // Get all settings from backend design configuration - with safe fallbacks
     const finalShowPagination = (_c = (_b = (_a = design === null || design === void 0 ? void 0 : design.blogSettings) === null || _a === void 0 ? void 0 : _a.readingExperience) === null || _b === void 0 ? void 0 : _b.showProgressBar) !== null && _c !== void 0 ? _c : true;
     const finalShowSearch = true; // Always show search by default
     const finalShowFilters = false; // Filters disabled by default
@@ -10239,9 +10532,28 @@ function BlogFullScreen(props) {
     if (loading && !posts.length) {
         return jsx(LoadingState, {});
     }
+    // Show error state if we have any error and no posts
     if (error && !posts.length) {
+        console.log('BlogFullScreen: Showing error state for posts error:', error);
         return jsx(ErrorState, { error: error, onRetry: refetch, className: className, style: style });
     }
+    // Show error state if metadata loading failed
+    if (metadataError && !posts.length) {
+        console.log('BlogFullScreen: Showing error state for metadata error:', metadataError);
+        return jsx(ErrorState, { error: `Metadata Error: ${metadataError}`, onRetry: refetch, className: className, style: style });
+    }
+    // Show error state if design loading failed completely and we have no posts
+    if (designError && !posts.length && !loading) {
+        console.log('BlogFullScreen: Showing error state for design error:', designError);
+        return jsx(ErrorState, { error: `Design Error: ${designError}`, onRetry: () => window.location.reload(), className: className, style: style });
+    }
+    // Show error state if API is ready but we have no posts and no errors (shouldn't happen with real API)
+    if (apiReady && !posts.length && !loading && !error && !metadataError && !designError) {
+        console.log('BlogFullScreen: No posts found, showing empty state');
+        return jsx(ErrorState, { error: "No blog posts found. Please check your API configuration.", onRetry: refetch, className: className, style: style });
+    }
+    // If we have posts but no design, still try to show the blog with defaults
+    if (posts.length && !design && !loading) ;
     // Single post view
     if (blogState.selectedPost) {
         return (jsx(SinglePostView, { config: config, post: blogState.selectedPost, onBack: blogState.handleBackToList, blogProps: {

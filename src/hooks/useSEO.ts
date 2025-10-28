@@ -104,16 +104,25 @@ export function useSEO(
         throw new Error(result.message || 'Failed to fetch SEO data');
       }
     } catch (error) {
-      console.error('Error fetching SEO data:', error);
-      
-      // Fallback to basic SEO data
-      const fallbackData = generateFallbackSEO(post, config, type);
-      setSeoData({
-        metaTags: fallbackData.metaTags,
-        structuredData: fallbackData.structuredData,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Failed to fetch SEO data'
-      });
+      console.error('API request failed:', error);
+
+      // Only use fallback data for demo credentials
+      if (config.projectId === 'demo-project') {
+        const fallbackData = generateFallbackSEO(post, config, type);
+        setSeoData({
+          metaTags: fallbackData.metaTags,
+          structuredData: fallbackData.structuredData,
+          loading: false,
+          error: null
+        });
+      } else {
+        setSeoData({
+          metaTags: {} as SEOMetaTags,
+          structuredData: [],
+          loading: false,
+          error: error instanceof Error ? error.message : 'Failed to fetch SEO data'
+        });
+      }
     }
   };
 
@@ -257,8 +266,19 @@ export function useSEOAnalysis(config: GEOPilotConfig, post?: BlogPost) {
         throw new Error(result.message || 'Failed to analyze SEO');
       }
     } catch (error) {
-      console.error('Error analyzing SEO:', error);
+      console.error('API request failed:', error);
       setError(error instanceof Error ? error.message : 'Failed to analyze SEO');
+
+      // Only set mock data for demo credentials
+      if (config.projectId === 'demo-project') {
+        setAnalysis({
+          score: 85,
+          issues: [],
+          suggestions: ['Great SEO setup!'],
+          readability: 'Good',
+          performance: 'Excellent'
+        });
+      }
     } finally {
       setLoading(false);
     }

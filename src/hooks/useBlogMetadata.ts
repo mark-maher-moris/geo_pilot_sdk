@@ -4,6 +4,7 @@ import {
   BlogMetadata,
   UseBlogMetadataResult
 } from '../types';
+import { generateMockMetadataResponse } from '../utils/mockData';
 
 export interface UseBlogMetadataOptions {
   autoFetch?: boolean;
@@ -41,8 +42,8 @@ export function useBlogMetadata(options: UseBlogMetadataOptions = {}): UseBlogMe
       
     } catch (err: any) {
       if (err.name !== 'AbortError') {
+        console.error('API request failed:', err.message);
         setError(err.message || 'Failed to fetch blog metadata');
-        console.error('Error fetching blog metadata:', err);
       }
     } finally {
       setLoading(false);
